@@ -2,47 +2,45 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Travel | Карта маршрутов (v2)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fast Travel | Карта маршрутов</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.css">
 
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: Arial, sans-serif; overflow: hidden; }
-        
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
 
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .leaflet-popup-tip { background-color: #2a2a2a; }
-        .leaflet-popup-content { max-width: 300px; font-size: 14px; line-height: 1.5; }
-        .leaflet-popup-content b { color: #00d4ff; font-size: 16px; }
+        .leaflet-popup-content { max-width: 260px; font-size: 13px; line-height: 1.4; }
+        .leaflet-popup-content b { color: #00d4ff; font-size: 15px; }
         
-        /* Компактная сетка для фото в попапе */
-        .popup-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 10px; }
+        .popup-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-top: 8px; }
         .popup-gallery a { display: block; width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 6px; cursor: pointer; }
         .popup-gallery img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s; }
         .popup-gallery a:hover img { opacity: 0.7; }
 
-        #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: all 0.2s; }
-        #menu-btn:hover { background-color: #00d4ff; color: #1a1a1a; }
+        #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2000; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
         #sidebar.open { left: 0; }
         #sidebar h2 { font-size: 18px; margin-top: 0; margin-bottom: 5px; color: #00d4ff; }
         #location-count { font-size: 13px; color: #a0a0a0; margin-bottom: 10px; }
         #search-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; margin-bottom: 15px; box-sizing: border-box; }
         #search-input:focus { outline: none; border-color: #00d4ff; }
-        .location-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; transition: background 0.2s; }
+        .location-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
         .location-item:hover { background-color: #3a3a3a; }
         .location-item strong { display: block; font-size: 14px; color: #e0e0e0; }
-        #add-point-btn { position: fixed; bottom: 30px; right: 30px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-        #add-point-btn:hover { transform: scale(1.1); }
-        #locate-btn { position: fixed; bottom: 100px; right: 30px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-        #locate-btn:hover { transform: scale(1.1); background-color: #00d4ff; color: #1a1a1a; }
-        #add-form { position: fixed; bottom: 100px; right: 30px; z-index: 2002; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 250px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+
+        #add-point-btn { position: fixed; bottom: 30px; right: 30px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        #locate-btn { position: fixed; bottom: 90px; right: 30px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        
+        #add-form { position: fixed; bottom: 90px; right: 30px; z-index: 2002; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 240px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
         #add-form.open { display: flex; }
         #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; }
         #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
         .leaflet-control-layers label { color: #e0e0e0; }
     </style>
@@ -55,7 +53,9 @@
         <div id="location-count">Загрузка...</div>
         <div id="location-list"></div>
     </div>
+    
     <div id="map"></div>
+    
     <button id="locate-btn" title="Моё местоположение">🎯</button>
     <button id="add-point-btn" title="Добавить точку">+</button>
 
@@ -78,12 +78,13 @@
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5.4.3/dist/photoswipe-lightbox.esm.js';
         
-        // Инициализация галереи с кнопками навигации
         window.pswpLightbox = new PhotoSwipeLightbox({
             gallery: '.popup-gallery',
             children: 'a',
             pswpModule: () => import('https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.esm.js'),
-            showHideAnimationType: 'zoom' // Плавное открытие
+            showHideAnimationType: 'fade', // Плавное появление
+            closeOnVerticalDrag: true, // Закрытие свайпом вниз на телефоне
+            arrowKeys: true
         });
         window.pswpLightbox.init();
     </script>
@@ -91,18 +92,23 @@
     <script>
         var map = L.map('map', { zoomControl: false }).setView([53.195873, 50.100193], 10);
         L.control.zoom({ position: 'bottomleft' }).addTo(map);
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', { attribution: '&copy; Stadia Maps', maxZoom: 20 }).addTo(map);
+        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', { 
+            attribution: '&copy; Stadia Maps', 
+            maxZoom: 20,
+            keepBuffer: 4 // Кэширование тайлов
+        }).addTo(map);
 
         const SUPABASE_URL = 'https://rawcofbihkxhzxnuhksr.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Уменьшенная иконка (40px) + кэширование через SVG
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: `<img src="logo.png" style="width: 60px; height: auto; filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.9));" />`,
-            iconSize: [60, 60],
-            iconAnchor: [30, 30], 
-            popupAnchor: [0, -30]
+            html: `<img src="logo.png" style="width: 40px; height: auto; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.9));" />`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20], 
+            popupAnchor: [0, -20]
         });
 
         var layers = { "Самара": L.layerGroup().addTo(map), "Питер": L.layerGroup(), "Другое": L.layerGroup(), "Маршруты (Линии)": L.layerGroup().addTo(map) };
@@ -129,7 +135,6 @@
                         return;
                     }
 
-                    // --- ЛОГИКА ФОТО (сетка) ---
                     var imageHtml = '';
                     if (loc.image_url && loc.image_url.trim() !== '') {
                         var urls = loc.image_url.split(',').map(s => s.trim()).filter(s => s);
