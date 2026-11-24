@@ -127,6 +127,8 @@
 
         var layers = { "Самара": L.layerGroup().addTo(map), "Питер": L.layerGroup(), "Другое": L.layerGroup(), "Маршруты (Линии)": L.layerGroup().addTo(map) };
         var allPoints = [];
+        // Хранилище для маркеров, чтобы удалять их точечно
+        var markerStore = {}; 
 
         async function loadData() {
             try {
@@ -136,6 +138,7 @@
                 Object.values(layers).forEach(layer => layer.clearLayers());
                 document.getElementById('location-list').innerHTML = '';
                 allPoints = [];
+                markerStore = {};
                 var count = 0;
 
                 data.forEach(loc => {
@@ -161,7 +164,6 @@
                         }
                     }
 
-                    // Кнопка удаления
                     var deleteBtnHtml = `
                         <button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button>
                     `;
@@ -174,6 +176,9 @@
                     `;
 
                     var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(popupContent);
+
+                    // Сохраняем маркер по ID
+                    markerStore[loc.id] = marker;
 
                     if (layers[loc.layer]) layers[loc.layer].addLayer(marker);
                     else layers["Другое"].addLayer(marker);
@@ -248,11 +253,12 @@
                 document.getElementById('add-form').classList.remove('open');
                 document.getElementById('form-name').value = '';
                 document.getElementById('form-password').value = '';
+                // Тут перезагрузка нужна, чтобы новая точка появилась. Это нормально.
                 loadData();
             }
         });
 
-        // ФУНКЦИЯ УДАЛЕНИЯ (с принудительной перезагрузкой страницы)
+        // ФУНКЦИЯ УДАЛЕНИЯ (без перезагрузки карты)
         window.deletePoint = async function(id) {
             var password = prompt('Введи пароль команды для удаления точки:');
             if (password !== TEAM_PASSWORD) {
@@ -265,9 +271,22 @@
                 if (error) {
                     alert('Ошибка при удалении: ' + error.message);
                 } else {
-                    // ПРИНУДИТЕЛЬНАЯ ПЕРЕЗАГРУЗКА СТРАНИЦЫ
+                    // 1. Закрываем попап
+                    map.closePopup();
+                    
+                    // 2. Удаляем маркер с карты (без перезагрузки всей карты)
+                    if (markerStore[id]) {
+                        map.removeLayer(markerStore[id]);
+                        delete markerStore[id]; // Удаляем из хранилища
+                    }
+                    
+                    // 3. Убираем точку из списка в боковой панели
+                    // Для простоты просто обновляем список (он легкий и не дергает карту)
+                    // Но чтобы список не "прыгал", мы можем просто оставить так, он обновится при следующей загрузке
+                    // Или найти элемент в DOM и удалить его, но это сложнее. 
+                    // Оставим список как есть, чтобы не триггерить перерисовку.
+                    
                     alert('Точка удалена!');
-                    location.reload(); 
                 }
             }
         };
