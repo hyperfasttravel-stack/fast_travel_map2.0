@@ -12,7 +12,7 @@
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: Arial, sans-serif; overflow: hidden; }
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
 
-        /* Стили для попапов (десктоп) */
+        /* Стили для попапов */
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
         .leaflet-popup-tip { background-color: #2a2a2a; }
         .leaflet-popup-content { max-width: 300px; margin: 0; padding: 0; }
@@ -23,7 +23,13 @@
         .popup-gallery a { display: block; width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 6px; cursor: pointer; }
         .popup-gallery img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s; }
 
-        /* Мобильная адаптация (шторка) */
+        /* Кнопка удаления в попапе */
+        .delete-btn {
+            background-color: #ff4d4d; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%; font-size: 13px;
+        }
+        .delete-btn:hover { background-color: #cc0000; }
+
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
             .leaflet-popup { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; top: auto !important; margin: 0 !important; transform: translateY(0) !important; }
             .leaflet-popup-content-wrapper { border-radius: 20px 20px 0 0; max-height: 70vh; overflow-y: auto; border-bottom: none; }
@@ -82,7 +88,6 @@
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
-        <!-- НОВОЕ ПОЛЕ: ПАРОЛЬ -->
         <input type="password" id="form-password" placeholder="Пароль команды" required>
         <button id="form-save">Кликни по карте и сохрани</button>
         <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
@@ -112,7 +117,6 @@
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // ПАРОЛЬ ДЛЯ ДОБАВЛЕНИЯ ТОЧЕК (можешь поменять на свой)
         const TEAM_PASSWORD = "fasttravel2026";
 
         var customIcon = L.divIcon({
@@ -159,11 +163,19 @@
                         }
                     }
 
-                    var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(`
+                    // Кнопка удаления (появится, если введут пароль)
+                    var deleteBtnHtml = `
+                        <button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button>
+                    `;
+
+                    var popupContent = `
                         <div class="popup-content">
                             <b>${loc.name}</b><br><br>${loc.description || ''}${imageHtml}
+                            ${deleteBtnHtml}
                         </div>
-                    `);
+                    `;
+
+                    var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(popupContent);
 
                     if (layers[loc.layer]) layers[loc.layer].addLayer(marker);
                     else layers["Другое"].addLayer(marker);
@@ -208,7 +220,6 @@
         document.getElementById('locate-btn').addEventListener('click', function() { map.locate({setView: true, maxZoom: 14}); });
         map.on('locationfound', function(e) { L.marker(e.latlng, { icon: customIcon }).addTo(map).bindPopup('Вы здесь!').openPopup(); });
 
-        // ЛОГИКА ДОБАВЛЕНИЯ С ПАРОЛЕМ
         var newLat = 0, newLng = 0;
         document.getElementById('add-point-btn').addEventListener('click', function() {
             document.getElementById('add-form').classList.toggle('open');
@@ -227,7 +238,6 @@
 
             if (!name || newLat === 0) { alert('Введи название и кликни по карте!'); return; }
             
-            // Проверка пароля
             if (password !== TEAM_PASSWORD) {
                 alert('Неверный пароль! Вы не из команды Fast Travel.');
                 return;
@@ -243,6 +253,24 @@
                 loadData();
             }
         });
+
+        // ГЛОБАЛЬНАЯ ФУНКЦИЯ УДАЛЕНИЯ (вызывается из попапа)
+        window.deletePoint = async function(id) {
+            var password = prompt('Введи пароль команды для удаления точки:');
+            if (password !== TEAM_PASSWORD) {
+                alert('Неверный пароль!');
+                return;
+            }
+            
+            if (confirm('Точно удалить эту точку?')) {
+                const { error } = await db.from('locations').delete().eq('id', id);
+                if (error) alert('Ошибка при удалении: ' + error.message);
+                else {
+                    alert('Точка удалена!');
+                    loadData(); // Обновляем карту
+                }
+            }
+        };
     </script>
 </body>
 </html>
