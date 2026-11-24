@@ -163,7 +163,7 @@
                         }
                     }
 
-                    // Кнопка удаления (появится, если введут пароль)
+                    // Кнопка удаления
                     var deleteBtnHtml = `
                         <button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button>
                     `;
@@ -254,7 +254,7 @@
             }
         });
 
-        // ГЛОБАЛЬНАЯ ФУНКЦИЯ УДАЛЕНИЯ (вызывается из попапа)
+        // ФУНКЦИЯ УДАЛЕНИЯ (с принудительным закрытием попапа)
         window.deletePoint = async function(id) {
             var password = prompt('Введи пароль команды для удаления точки:');
             if (password !== TEAM_PASSWORD) {
@@ -264,13 +264,18 @@
             
             if (confirm('Точно удалить эту точку?')) {
                 const { error } = await db.from('locations').delete().eq('id', id);
-                if (error) alert('Ошибка при удалении: ' + error.message);
-                else {
+                if (error) {
+                    alert('Ошибка при удалении: ' + error.message);
+                } else {
+                    // Закрываем попап перед обновлением, чтобы точка исчезла
+                    map.closePopup();
                     alert('Точка удалена!');
-                    loadData(); // Обновляем карту
+                    loadData(); 
                 }
             }
         };
     </script>
+</body>
+</html>
 </body>
 </html>
