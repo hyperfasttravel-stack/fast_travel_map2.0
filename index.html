@@ -9,397 +9,65 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.css">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: #1a1a1a;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            overflow: hidden;
-        }
-        #map {
-            width: 100%;
-            height: 100vh;
-            background-color: #1a1a1a;
-            filter: brightness(1.3) contrast(1.2) saturate(1.1);
-        }
+        body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: Arial, sans-serif; overflow: hidden; }
+        #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 212, 255, 0.6) !important; border: 2px solid #fff !important; }
+        .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #1a1a1a !important; color: #00d4ff !important; font-weight: bold; }
+        .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
+        .leaflet-popup-tip { background-color: #2a2a2a; }
+        .leaflet-popup-content { max-width: 300px; margin: 0; padding: 0; }
+        .card-content { padding: 15px; font-size: 14px; line-height: 1.5; color: #e0e0e0; }
+        .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 6px; padding-right: 25px; }
+        .card-desc { margin-bottom: 10px; white-space: pre-line; }
+        .popup-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; }
+        .popup-gallery a { display: block; width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; cursor: pointer; background: #1a1a1a; }
+        .popup-gallery img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; }
+        .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
-        /* Кластеры */
-        .marker-cluster-small,
-        .marker-cluster-medium,
-        .marker-cluster-large {
-            background-color: rgba(0, 212, 255, 0.6) !important;
-            border: 2px solid #fff !important;
-        }
-        .marker-cluster-small div,
-        .marker-cluster-medium div,
-        .marker-cluster-large div {
-            background-color: #1a1a1a !important;
-            color: #00d4ff !important;
-            font-weight: bold;
-        }
-
-        /* Десктопный попап */
-        .leaflet-popup-content-wrapper {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            border-radius: 12px;
-            border: 1px solid #444;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            padding: 0;
-        }
-        .leaflet-popup-tip {
-            background-color: #2a2a2a;
-        }
-        .leaflet-popup-content {
-            max-width: 300px;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Карточка точки (общая для ПК и мобильной шторки) */
-        .card-content {
-            padding: 15px;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #e0e0e0;
-        }
-        .card-content b {
-            color: #00d4ff;
-            font-size: 17px;
-            display: block;
-            margin-bottom: 6px;
-            padding-right: 28px;
-        }
-        .card-desc {
-            margin-bottom: 10px;
-            white-space: pre-line;
-        }
-        .popup-gallery {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-top: 10px;
-        }
-        .popup-gallery a {
-            display: block;
-            width: 100%;
-            aspect-ratio: 16/10;
-            overflow: hidden;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #1a1a1a;
-        }
-        .popup-gallery img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.2s;
-        }
-        .popup-gallery img:hover {
-            transform: scale(1.03);
-        }
-        .delete-btn {
-            background-color: rgba(255, 77, 77, 0.15);
-            color: #ff4d4d;
-            border: 1px solid #ff4d4d;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 14px;
-            width: 100%;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .delete-btn:hover {
-            background-color: #ff4d4d;
-            color: white;
-        }
-
-        /* Выдвижная шторка (Bottom Sheet) для мобильных */
         #bottom-sheet {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 85vh;
-            background-color: #242424;
-            border-top: 1px solid #444;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.85);
-            z-index: 2500;
-            transform: translateY(100%);
+            position: fixed; left: 0; right: 0; bottom: 0; height: 85vh;
+            background-color: #242424; border-top: 1px solid #444;
+            border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.85);
+            z-index: 2500; transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex;
-            flex-direction: column;
-            will-change: transform;
+            display: flex; flex-direction: column;
         }
-        #bottom-sheet.half {
-            transform: translateY(42vh);
-        }
-        #bottom-sheet.full {
-            transform: translateY(0);
-        }
-        #sheet-drag-zone {
-            padding: 12px 0 8px 0;
-            cursor: grab;
-            touch-action: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            flex-shrink: 0;
-        }
-        #sheet-handle {
-            width: 42px;
-            height: 5px;
-            background-color: #666;
-            border-radius: 3px;
-        }
-        #sheet-close-btn {
-            position: absolute;
-            right: 15px;
-            top: 8px;
-            background: #333;
-            border: none;
-            color: #aaa;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 18px;
-            line-height: 1;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #sheet-body {
-            overflow-y: auto;
-            padding: 0 18px 40px 18px;
-            flex-grow: 1;
-            overscroll-behavior: contain;
-        }
-        @media (min-width: 769px) {
-            #bottom-sheet {
-                display: none !important;
-            }
-        }
+        #bottom-sheet.half { transform: translateY(42vh); }
+        #bottom-sheet.full { transform: translateY(0); }
+        #sheet-drag-zone { padding: 12px 0 8px 0; touch-action: none; display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0; }
+        #sheet-handle { width: 42px; height: 5px; background-color: #666; border-radius: 3px; }
+        #sheet-close-btn { position: absolute; right: 15px; top: 8px; background: #333; border: none; color: #aaa; width: 28px; height: 28px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+        #sheet-body { overflow-y: auto; padding: 0 18px 40px 18px; flex-grow: 1; overscroll-behavior: contain; }
+        @media (min-width: 769px) { #bottom-sheet { display: none !important; } }
 
-        /* Кнопки управления и боковое меню */
-        #menu-btn {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 3000;
-            background-color: #2a2a2a;
-            color: #00d4ff;
-            border: 2px solid #00d4ff;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: -320px;
-            width: 300px;
-            height: 100%;
-            background-color: #2a2a2a;
-            color: white;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.8);
-            z-index: 2900;
-            padding: 60px 20px 20px 20px;
-            box-sizing: border-box;
-            transition: left 0.3s ease-in-out;
-        }
-        #sidebar.open {
-            left: 0;
-        }
-        #sidebar h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 5px;
-            color: #00d4ff;
-        }
-        #location-count {
-            font-size: 13px;
-            color: #a0a0a0;
-            margin-bottom: 10px;
-        }
-        #search-input {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background-color: #1a1a1a;
-            color: white;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-        .location-item {
-            padding: 10px;
-            border-bottom: 1px solid #444;
-            cursor: pointer;
-        }
-        .location-item:hover {
-            background-color: #333;
-        }
-        .location-item strong {
-            display: block;
-            font-size: 14px;
-            color: #e0e0e0;
-        }
-        .location-item span {
-            font-size: 11px;
-            color: #00d4ff;
-        }
+        #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
+        #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
+        #sidebar.open { left: 0; }
+        #sidebar h2 { font-size: 18px; margin-top: 0; margin-bottom: 5px; color: #00d4ff; }
+        #location-count { font-size: 13px; color: #a0a0a0; margin-bottom: 10px; }
+        #search-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        .location-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
+        .location-item:hover { background-color: #333; }
+        .location-item strong { display: block; font-size: 14px; color: #e0e0e0; }
+        .location-item span { font-size: 11px; color: #00d4ff; }
 
-        #add-point-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            z-index: 2001;
-            background-color: #00d4ff;
-            color: #1a1a1a;
-            border: none;
-            border-radius: 50%;
-            width: 56px;
-            height: 56px;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #locate-btn {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            z-index: 2001;
-            background-color: #2a2a2a;
-            color: #00d4ff;
-            border: 2px solid #00d4ff;
-            border-radius: 50%;
-            width: 56px;
-            height: 56px;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        #locate-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
 
-        /* Форма добавления точки */
-        #add-form {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            z-index: 2600;
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #00d4ff;
-            display: none;
-            flex-direction: column;
-            width: 270px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
-            max-height: 75vh;
-            overflow-y: auto;
-        }
-        #add-form.open {
-            display: flex;
-        }
-        @media (max-width: 768px) {
-            #add-form {
-                right: 10px;
-                left: 10px;
-                width: auto;
-                bottom: 95px;
-            }
-        }
-        #add-form input[type="text"],
-        #add-form select,
-        #add-form textarea {
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background-color: #1a1a1a;
-            color: white;
-            font-family: inherit;
-        }
-        .file-upload-label {
-            display: block;
-            background-color: #1a1a1a;
-            color: #00d4ff;
-            border: 1px dashed #00d4ff;
-            padding: 8px;
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-        #file-count-text {
-            font-size: 11px;
-            color: #aaa;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        #add-form button {
-            background-color: #00d4ff;
-            color: #1a1a1a;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        #add-form button:hover {
-            background-color: #00b0d4;
-        }
-        #add-form button:disabled {
-            background-color: #555;
-            color: #999;
-            cursor: not-allowed;
-        }
-
-        #toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2a2a2a;
-            color: #00d4ff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid #00d4ff;
-            z-index: 4000;
-            display: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            font-weight: bold;
-            text-align: center;
-            font-size: 14px;
-            max-width: 85%;
-        }
-        .leaflet-control-layers {
-            background-color: #2a2a2a !important;
-            color: white !important;
-            border-radius: 8px;
-            border: 1px solid #444 !important;
-        }
-        .leaflet-control-layers label {
-            color: #e0e0e0;
-        }
+        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+        #add-form.open { display: flex; }
+        @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
+        #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
+        .file-label { background-color: #1a1a1a; border: 1px dashed #00d4ff; color: #00d4ff; padding: 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 13px; margin-bottom: 10px; display: block; }
+        #file-count { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
+        #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 4000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
+        .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
+        .leaflet-control-layers label { color: #e0e0e0; }
     </style>
 </head>
 <body>
-
     <button id="menu-btn">☰</button>
     <div id="sidebar">
         <h2>Маршруты и точки</h2>
@@ -407,41 +75,33 @@
         <div id="location-count">Загрузка...</div>
         <div id="location-list"></div>
     </div>
-
     <div id="map"></div>
-
-    <!-- Выдвижная мобильная шторка -->
     <div id="bottom-sheet">
         <div id="sheet-drag-zone">
             <div id="sheet-handle"></div>
-            <button id="sheet-close-btn" title="Закрыть">×</button>
+            <button id="sheet-close-btn">×</button>
         </div>
         <div id="sheet-body"></div>
     </div>
-
     <button id="locate-btn" title="Моё местоположение">🎯</button>
     <button id="add-point-btn" title="Добавить точку">+</button>
-
     <div id="add-form">
         <b style="color:#00d4ff; margin-bottom:6px;">Добавить точку</b>
         <p id="coords-hint" style="font-size:12px; color:#aaa; margin:0 0 10px 0;">Кликни по карте, чтобы поставить пин</p>
         <input type="text" id="form-name" placeholder="Название" required>
         <textarea id="form-desc" placeholder="Описание" rows="2"></textarea>
-        
-        <label class="file-upload-label" for="form-files">📷 Выбрать фото с телефона / ПК</label>
+        <label class="file-label" for="form-files">📷 Выбрать фото с устройства</label>
         <input type="file" id="form-files" accept="image/*" multiple style="display:none;">
-        <div id="file-count-text">Файлы не выбраны</div>
-
-        <input type="text" id="form-images" placeholder="Или ссылки на фото (через запятую)">
+        <div id="file-count">Файлы не выбраны</div>
+        <input type="text" id="form-images" placeholder="Или ссылки через запятую">
         <select id="form-layer">
             <option value="Самара">Самара</option>
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
         <button id="form-save">Сохранить точку</button>
-        <button id="form-cancel" type="button" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
+        <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
     </div>
-
     <div id="toast"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -458,30 +118,25 @@
         });
         window.pswpLightbox.init();
     </script>
-
     <script>
-        var startLat = Number('53.195873');
-        var startLng = Number('50.100193');
-        var map = L.map('map', { zoomControl: false }).setView(L.latLng(startLat, startLng), 10);
+        var map = L.map('map', { zoomControl: false }).setView([53.195873, 50.100193], 10);
         L.control.zoom({ position: 'bottomleft' }).addTo(map);
-
         L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', {
             attribution: '&copy; Stadia Maps',
             maxZoom: 20,
             keepBuffer: 4
         }).addTo(map);
 
-        var SUPABASE_URL = 'https://rawcofbihkxhzxnuhksr.supabase.co';
-        var SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
-        var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://rawcofbihkxhzxnuhksr.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
+        const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        /* Крупные иконки 56x56 */
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: '<img src="logo.png" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.9));" />',
-            iconSize: L.point(56, 56),
-            iconAnchor: L.point(28, 28),
-            popupAnchor: L.point(0, -28)
+            html: `<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.95));" />`,
+            iconSize: [56, 56],
+            iconAnchor: [28, 28],
+            popupAnchor: [0, -28]
         });
 
         var clusterGroups = {
@@ -500,14 +155,14 @@
         var allPoints = [];
         var markerStore = {};
         var userLocationMarker = null;
-        var userLocationCircle = null;
+        var userAccuracyCircle = null;
         var tempDraftMarker = null;
 
         function isMobile() {
             return window.innerWidth <= 768;
         }
 
-        function showToast(message, isError) {
+        function showToast(message, isError = false) {
             var toast = document.getElementById('toast');
             toast.innerText = message;
             toast.style.color = isError ? '#ff4d4d' : '#00d4ff';
@@ -519,13 +174,12 @@
             }, 3500);
         }
 
-        /* --- ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) --- */
-        var sheet = document.getElementById('bottom-sheet');
-        var sheetBody = document.getElementById('sheet-body');
-        var dragZone = document.getElementById('sheet-drag-zone');
-        var startY = 0;
-        var currentY = 0;
-        var isDragging = false;
+        const sheet = document.getElementById('bottom-sheet');
+        const sheetBody = document.getElementById('sheet-body');
+        const dragZone = document.getElementById('sheet-drag-zone');
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
 
         function openBottomSheet(htmlContent) {
             sheetBody.innerHTML = htmlContent;
@@ -549,7 +203,7 @@
 
         dragZone.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length > 0) {
-                startY = e.touches.item(0).clientY;
+                startY = e.touches[0].clientY;
                 isDragging = true;
                 sheet.style.transition = 'none';
             }
@@ -557,11 +211,10 @@
 
         dragZone.addEventListener('touchmove', function(e) {
             if (!isDragging || !e.touches || e.touches.length === 0) return;
-            currentY = e.touches.item(0).clientY;
-            var deltaY = currentY - startY;
-            var baseOffset = sheet.classList.contains('full') ? 0 : window.innerHeight * 0.42;
-            var newTranslate = Math.max(0, baseOffset + deltaY);
-            sheet.style.transform = 'translateY(' + newTranslate + 'px)';
+            currentY = e.touches[0].clientY;
+            const deltaY = currentY - startY;
+            const baseOffset = sheet.classList.contains('full') ? 0 : window.innerHeight * 0.42;
+            sheet.style.transform = `translateY(${Math.max(0, baseOffset + deltaY)}px)`;
         }, { passive: true });
 
         dragZone.addEventListener('touchend', function() {
@@ -569,10 +222,8 @@
             isDragging = false;
             sheet.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
             sheet.style.transform = '';
-
-            var deltaY = currentY - startY;
+            const deltaY = currentY - startY;
             if (Math.abs(deltaY) < 20) return;
-
             if (deltaY < -50) {
                 sheet.classList.remove('half');
                 sheet.classList.add('full');
@@ -590,23 +241,24 @@
 
         function updatePhotoSizes() {
             document.querySelectorAll('.popup-gallery a').forEach(function(link) {
-                var img = new Image();
+                const img = new Image();
                 img.onload = function() {
                     link.setAttribute('data-pswp-width', this.naturalWidth);
                     link.setAttribute('data-pswp-height', this.naturalHeight);
+                };
+                img.onerror = function() {
+                    link.style.display = 'none';
                 };
                 img.src = link.href;
             });
         }
 
-        /* --- ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE --- */
         async function loadData() {
             try {
-                var response = await db.from('locations').select('*');
-                if (response.error) throw response.error;
-                var data = response.data || [];
+                const { data, error } = await db.from('locations').select('*');
+                if (error) throw error;
 
-                Object.values(clusterGroups).forEach(function(group) { group.clearLayers(); });
+                Object.values(clusterGroups).forEach(function(g) { g.clearLayers(); });
                 lineLayer.clearLayers();
                 document.getElementById('location-list').innerHTML = '';
                 allPoints = [];
@@ -616,87 +268,55 @@
                 data.forEach(function(loc) {
                     if (loc.geometry_type === 'LineString') {
                         try {
-                            var coords = typeof loc.coordinates === 'string' ? JSON.parse(loc.coordinates) : loc.coordinates;
-                            if (Array.isArray(coords) && coords.length > 0) {
-                                /* Тонкие линии маршрутов (weight: 2) */
-                                L.polyline(coords, {
-                                    color: '#ffffff',
-                                    weight: 2,
-                                    opacity: 0.85,
-                                    lineJoin: 'round'
-                                }).addTo(lineLayer);
+                            if (Array.isArray(loc.coordinates) && loc.coordinates.length > 0) {
+                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 2.5, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
                                 count++;
                             }
-                        } catch (e) {}
+                        } catch(e) {}
                         return;
                     }
 
                     var imageHtml = '';
                     if (loc.image_url && loc.image_url.trim() !== '') {
-                        var urls = loc.image_url.split('|||');
-                        if (urls.length === 1 && !loc.image_url.startsWith('data:')) {
-                            urls = loc.image_url.split(',');
-                        }
-                        urls = urls.map(function(s) { return s.trim(); }).filter(function(s) { return s; });
-
+                        var urls = loc.image_url.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
                         if (urls.length > 0) {
                             imageHtml = '<div class="popup-gallery">';
                             urls.forEach(function(url) {
-                                imageHtml += '<a href="' + url + '" data-pswp-width="1200" data-pswp-height="900"><img src="' + url + '" alt="Фото" loading="lazy" onerror="this.parentElement.style.display='none'"></a>';
+                                imageHtml += `<a href="${url}" data-pswp-width="1200" data-pswp-height="900"><img src="${url}" alt="Фото" loading="lazy"></a>`;
                             });
                             imageHtml += '</div>';
                         }
                     }
 
-                    var deleteBtnHtml = '<button class="delete-btn" onclick="deletePoint(' + loc.id + ')">Удалить точку</button>';
-                    var cardHtml = '<div class="card-content">' +
-                        '<b>' + loc.name + '</b>' +
-                        '<div class="card-desc">' + (loc.description || 'Без описания') + '</div>' +
-                        imageHtml +
-                        deleteBtnHtml +
-                        '</div>';
-
-                    var marker = L.marker(L.latLng(loc.lat, loc.lng), { icon: customIcon });
+                    var cardHtml = `<div class="card-content"><b>${loc.name}</b><div class="card-desc">${loc.description || 'Без описания'}</div>${imageHtml}<button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button></div>`;
+                    var marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
 
                     marker.on('click', function(e) {
                         L.DomEvent.stopPropagation(e);
                         if (isMobile()) {
                             openBottomSheet(cardHtml);
-                            var targetPoint = map.project(L.latLng(loc.lat, loc.lng), map.getZoom());
+                            const targetPoint = map.project([loc.lat, loc.lng], map.getZoom());
                             targetPoint.y += window.innerHeight * 0.18;
                             map.panTo(map.unproject(targetPoint, map.getZoom()), { animate: true });
                         } else {
-                            if (!marker.getPopup()) {
-                                marker.bindPopup(cardHtml);
-                            }
+                            if (!marker.getPopup()) marker.bindPopup(cardHtml);
                             marker.openPopup();
                             setTimeout(updatePhotoSizes, 50);
                         }
                     });
 
                     markerStore[loc.id] = marker;
-
-                    var layerName = loc.layer ? loc.layer.trim() : '';
+                    var layerName = loc.layer ? loc.layer.trim().toLowerCase() : '';
                     var targetGroupKey = "Другое";
-                    if (layerName.toLowerCase().includes('питер') || layerName.toLowerCase().includes('piter')) {
-                        targetGroupKey = "Питер";
-                    } else if (layerName.toLowerCase().includes('самара') || layerName.toLowerCase().includes('samara')) {
-                        targetGroupKey = "Самара";
-                    }
+                    if (layerName.includes('питер') || layerName.includes('piter')) targetGroupKey = "Питер";
+                    else if (layerName.includes('самара') || layerName.includes('samara')) targetGroupKey = "Самара";
 
                     clusterGroups[targetGroupKey].addLayer(marker);
-                    allPoints.push({
-                        name: loc.name,
-                        layer: targetGroupKey,
-                        lat: loc.lat,
-                        lng: loc.lng,
-                        marker: marker,
-                        group: clusterGroups[targetGroupKey]
-                    });
+                    allPoints.push({ name: loc.name, layer: targetGroupKey, lat: loc.lat, lng: loc.lng, marker: marker, group: clusterGroups[targetGroupKey] });
                     count++;
                 });
 
-                document.getElementById('location-count').innerText = 'Объектов на карте: ' + count;
+                document.getElementById('location-count').innerText = `Объектов на карте: ${count}`;
                 allPoints.sort(function(a, b) { return a.name.localeCompare(b.name); });
                 renderList(allPoints);
             } catch (err) {
@@ -710,32 +330,23 @@
             points.forEach(function(loc) {
                 var div = document.createElement('div');
                 div.className = 'location-item';
-                div.innerHTML = '<strong>' + loc.name + '</strong><span>' + loc.layer + '</span>';
+                div.innerHTML = `<strong>${loc.name}</strong><span>${loc.layer}</span>`;
                 div.onclick = function() {
-                    if (!map.hasLayer(loc.group)) {
-                        map.addLayer(loc.group);
-                    }
+                    if (!map.hasLayer(loc.group)) map.addLayer(loc.group);
                     loc.group.zoomToShowLayer(loc.marker, function() {
                         loc.marker.fire('click');
                     });
-                    if (isMobile()) {
-                        document.getElementById('sidebar').classList.remove('open');
-                    }
+                    if (isMobile()) document.getElementById('sidebar').classList.remove('open');
                 };
                 listContainer.appendChild(div);
             });
         }
 
-        /* --- ПЕРЕКЛЮЧЕНИЕ СЛОЕВ И ПОИСК --- */
         map.on('overlayadd', function(e) {
-            if (e.name === 'Питер') {
-                map.flyTo(L.latLng(59.934127, 30.305973), 10, { duration: 1.5 });
-            }
+            if (e.name === 'Питер') map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
         });
         map.on('overlayremove', function(e) {
-            if (e.name === 'Питер') {
-                map.flyTo(L.latLng(53.195873, 50.100193), 10, { duration: 1.5 });
-            }
+            if (e.name === 'Питер') map.flyTo([53.195873, 50.100193], 10, { duration: 1.5 });
         });
 
         L.control.layers(null, layers, { collapsed: true, position: 'topright' }).addTo(map);
@@ -750,152 +361,93 @@
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
-        /* --- ГЕОЛОКАЦИЯ (GPS) --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
             if (!navigator.geolocation) {
-                showToast('Геолокация не поддерживается браузером', true);
+                showToast('Браузер не поддерживает геолокацию', true);
                 return;
             }
             showToast('Определяем местоположение...');
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
-                    var lat = pos.coords.latitude;
-                    var lng = pos.coords.longitude;
-                    var acc = pos.coords.accuracy;
-                    var userLatLng = L.latLng(lat, lng);
-
-                    map.flyTo(userLatLng, 16, { duration: 1.2 });
-
+                    var latlng = [pos.coords.latitude, pos.coords.longitude];
+                    var accuracy = pos.coords.accuracy;
+                    map.flyTo(latlng, 16, { duration: 1.2 });
                     if (userLocationMarker) {
-                        userLocationMarker.setLatLng(userLatLng);
-                        userLocationCircle.setLatLng(userLatLng).setRadius(acc);
+                        userLocationMarker.setLatLng(latlng);
+                        userAccuracyCircle.setLatLng(latlng).setRadius(accuracy);
                     } else {
-                        userLocationCircle = L.circle(userLatLng, {
-                            radius: acc,
-                            color: '#00d4ff',
-                            fillColor: '#00d4ff',
-                            fillOpacity: 0.15,
-                            weight: 1
-                        }).addTo(map);
-
-                        userLocationMarker = L.circleMarker(userLatLng, {
-                            radius: 9,
-                            fillColor: '#00d4ff',
-                            color: '#ffffff',
-                            weight: 3,
-                            opacity: 1,
-                            fillOpacity: 1
-                        }).addTo(map).bindPopup('Вы здесь (точность ~' + Math.round(acc) + ' м)');
+                        userAccuracyCircle = L.circle(latlng, { radius: accuracy, color: '#00d4ff', fillColor: '#00d4ff', fillOpacity: 0.15, weight: 1 }).addTo(map);
+                        userLocationMarker = L.circleMarker(latlng, { radius: 9, fillColor: '#00d4ff', color: '#ffffff', weight: 3, opacity: 1, fillOpacity: 1 }).addTo(map).bindPopup(`Вы здесь (точность ~${Math.round(accuracy)} м)`);
                     }
                     userLocationMarker.openPopup();
                 },
                 function(err) {
-                    var msg = 'Не удалось определить геопозицию';
-                    if (err.code === 1) msg = 'Доступ к геолокации запрещён в настройках браузера';
-                    if (err.code === 2) msg = 'Сигнал GPS недоступен';
-                    if (err.code === 3) msg = 'Превышено время ожидания GPS';
-                    showToast(msg, true);
+                    if (err.code === 1) showToast('Доступ к геолокации запрещён в настройках браузера', true);
+                    else showToast('Не удалось определить координаты. Включите GPS', true);
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         });
 
-        /* --- СЖАТИЕ И ЗАГРУЗКА ФОТО С ТЕЛЕФОНА / ПК --- */
         document.getElementById('form-files').addEventListener('change', function(e) {
             var count = e.target.files ? e.target.files.length : 0;
-            document.getElementById('file-count-text').innerText = count > 0
-                ? 'Выбрано фото: ' + count
-                : 'Файлы не выбраны';
+            document.getElementById('file-count').innerText = count > 0 ? `Выбрано файлов: ${count}` : 'Файлы не выбраны';
         });
 
-        function compressImageToBlob(file) {
-            return new Promise(function(resolve, reject) {
+        function compressImage(file) {
+            return new Promise(function(resolve) {
                 var reader = new FileReader();
                 reader.onload = function(event) {
                     var img = new Image();
                     img.onload = function() {
-                        var maxSide = 1280;
-                        var width = img.width;
-                        var height = img.height;
-                        if (width > maxSide || height > maxSide) {
-                            if (width > height) {
-                                height = Math.round((height * maxSide) / width);
-                                width = maxSide;
-                            } else {
-                                width = Math.round((width * maxSide) / height);
-                                height = maxSide;
-                            }
-                        }
                         var canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        var ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        var dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        var maxDim = 1280;
+                        var w = img.width;
+                        var h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                            else { w = Math.round(w * maxDim / h); h = maxDim; }
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         canvas.toBlob(function(blob) {
-                            resolve({ blob: blob, dataUrl: dataUrl });
+                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', 0.8) });
                         }, 'image/jpeg', 0.8);
                     };
-                    img.onerror = reject;
                     img.src = event.target.result;
                 };
-                reader.onerror = reject;
                 reader.readAsDataURL(file);
             });
         }
 
-        async function uploadSelectedFiles(fileList) {
-            var uploadedUrls = [];
-            for (var i = 0; i < fileList.length; i++) {
-                var file = fileList.item(i);
-                var compressed = await compressImageToBlob(file);
-                var fileName = Date.now() + '_' + i + '.jpg';
-
-                var uploadRes = await db.storage.from('photos').upload(fileName, compressed.blob, {
-                    contentType: 'image/jpeg',
-                    upsert: false
-                });
-
-                if (!uploadRes.error) {
-                    var pubRes = db.storage.from('photos').getPublicUrl(fileName);
-                    if (pubRes && pubRes.data && pubRes.data.publicUrl) {
-                        uploadedUrls.push(pubRes.data.publicUrl);
-                    }
-                } else {
-                    uploadedUrls.push(compressed.dataUrl);
-                }
-            }
-            return uploadedUrls;
-        }
-
-        /* --- ДОБАВЛЕНИЕ И УДАЛЕНИЕ ТОЧЕК (БЕЗ ПАРОЛЯ) --- */
         var newLat = 0;
         var newLng = 0;
 
         function setDraftPoint(latlng) {
             newLat = latlng.lat;
             newLng = latlng.lng;
-            document.getElementById('coords-hint').innerText = 'Точка: ' + newLat.toFixed(5) + ', ' + newLng.toFixed(5) + ' (пин можно двигать)';
+            document.getElementById('coords-hint').innerText = `Выбрано: ${newLat.toFixed(5)}, ${newLng.toFixed(5)} (пин можно двигать)`;
             if (!tempDraftMarker) {
                 tempDraftMarker = L.marker(latlng, { draggable: true }).addTo(map);
                 tempDraftMarker.on('dragend', function(ev) {
                     var pos = ev.target.getLatLng();
                     newLat = pos.lat;
                     newLng = pos.lng;
-                    document.getElementById('coords-hint').innerText = 'Точка: ' + newLat.toFixed(5) + ', ' + newLng.toFixed(5);
+                    document.getElementById('coords-hint').innerText = `Выбрано: ${newLat.toFixed(5)}, ${newLng.toFixed(5)}`;
                 });
             } else {
                 tempDraftMarker.setLatLng(latlng);
             }
         }
 
-        function onMapClickForAdd(e) {
+        function onMapClickAdd(e) {
             setDraftPoint(e.latlng);
         }
 
         function closeAddForm() {
             document.getElementById('add-form').classList.remove('open');
-            map.off('click', onMapClickForAdd);
+            map.off('click', onMapClickAdd);
             if (tempDraftMarker) {
                 map.removeLayer(tempDraftMarker);
                 tempDraftMarker = null;
@@ -913,19 +465,19 @@
                 closeBottomSheet();
                 form.classList.add('open');
                 showToast('Кликни по карте, чтобы выбрать место');
-                map.on('click', onMapClickForAdd);
+                map.on('click', onMapClickAdd);
             }
         });
 
         document.getElementById('form-cancel').addEventListener('click', closeAddForm);
 
         document.getElementById('form-save').addEventListener('click', async function() {
-            var saveBtn = document.getElementById('form-save');
             var name = document.getElementById('form-name').value.trim();
             var desc = document.getElementById('form-desc').value.trim();
-            var linkImages = document.getElementById('form-images').value.trim();
+            var manualUrls = document.getElementById('form-images').value.trim();
             var layer = document.getElementById('form-layer').value;
             var fileInput = document.getElementById('form-files');
+            var saveBtn = document.getElementById('form-save');
 
             if (!name || newLat === 0) {
                 showToast('Введи название и кликни по карте!', true);
@@ -934,65 +486,61 @@
 
             saveBtn.disabled = true;
             saveBtn.innerText = 'Сохранение...';
+            var finalUrls = manualUrls ? manualUrls.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; }) : [];
 
-            try {
-                var allPhotos = [];
-                if (fileInput.files && fileInput.files.length > 0) {
-                    showToast('Загружаем фото...');
-                    var uploaded = await uploadSelectedFiles(fileInput.files);
-                    allPhotos = allPhotos.concat(uploaded);
+            if (fileInput.files && fileInput.files.length > 0) {
+                for (var i = 0; i < fileInput.files.length; i++) {
+                    var compressed = await compressImage(fileInput.files[i]);
+                    var fileName = `${Date.now()}_${i}.jpg`;
+                    const { error: uploadErr } = await db.storage.from('photos').upload(fileName, compressed.blob, { contentType: 'image/jpeg' });
+                    if (!uploadErr) {
+                        const { data: pubData } = db.storage.from('photos').getPublicUrl(fileName);
+                        finalUrls.push(pubData.publicUrl);
+                    } else {
+                        finalUrls.push(compressed.dataUrl);
+                    }
                 }
-                if (linkImages) {
-                    var parsedLinks = linkImages.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
-                    allPhotos = allPhotos.concat(parsedLinks);
-                }
+            }
 
-                var finalImageUrl = allPhotos.join('|||');
+            const { error } = await db.from('locations').insert([{
+                name: name,
+                description: desc,
+                image_url: finalUrls.join(', '),
+                lat: newLat,
+                lng: newLng,
+                layer: layer,
+                geometry_type: 'Point',
+                coordinates: '[]'
+            }]);
 
-                var insertRes = await db.from('locations').insert([{
-                    name: name,
-                    description: desc,
-                    image_url: finalImageUrl,
-                    lat: newLat,
-                    lng: newLng,
-                    layer: layer,
-                    geometry_type: 'Point',
-                    coordinates: '[]'
-                }]);
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Сохранить точку';
 
-                if (insertRes.error) {
-                    showToast('Ошибка: ' + insertRes.error.message, true);
-                } else {
-                    showToast('Точка добавлена!');
-                    document.getElementById('form-name').value = '';
-                    document.getElementById('form-desc').value = '';
-                    document.getElementById('form-images').value = '';
-                    fileInput.value = '';
-                    document.getElementById('file-count-text').innerText = 'Файлы не выбраны';
-                    closeAddForm();
-                    loadData();
-                }
-            } catch (err) {
-                showToast('Ошибка при сохранении: ' + err.message, true);
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerText = 'Сохранить точку';
+            if (error) {
+                showToast(`Ошибка: ${error.message}`, true);
+            } else {
+                showToast('Точка добавлена!');
+                document.getElementById('form-name').value = '';
+                document.getElementById('form-desc').value = '';
+                document.getElementById('form-images').value = '';
+                fileInput.value = '';
+                document.getElementById('file-count').innerText = 'Файлы не выбраны';
+                closeAddForm();
+                loadData();
             }
         });
 
         window.deletePoint = async function(id) {
             if (confirm('Точно удалить эту точку?')) {
-                var delRes = await db.from('locations').delete().eq('id', id);
-                if (delRes.error) {
-                    showToast('Ошибка при удалении: ' + delRes.error.message, true);
+                const { error } = await db.from('locations').delete().eq('id', id);
+                if (error) {
+                    showToast(`Ошибка при удалении: ${error.message}`, true);
                 } else {
                     map.closePopup();
                     closeBottomSheet();
                     if (markerStore[id]) {
-                        Object.values(clusterGroups).forEach(function(group) {
-                            if (group.hasLayer(markerStore[id])) {
-                                group.removeLayer(markerStore[id]);
-                            }
+                        Object.values(clusterGroups).forEach(function(g) {
+                            if (g.hasLayer(markerStore[id])) g.removeLayer(markerStore[id]);
                         });
                         delete markerStore[id];
                     }
