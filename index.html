@@ -19,25 +19,38 @@
         /* Десктопный попап */
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
         .leaflet-popup-tip { background-color: #2a2a2a; }
-        .leaflet-popup-content { width: 290px !important; max-width: 310px; margin: 0; padding: 0; }
+        .leaflet-popup-content { max-width: 320px; min-width: 260px; margin: 0; padding: 0; }
         
-        /* Карточка контента (ПК и мобильная шторка) */
+        /* Карточка объекта */
         .card-content { padding: 15px; font-size: 14px; line-height: 1.5; color: #e0e0e0; }
-        .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 6px; padding-right: 25px; }
-        .card-desc { margin-bottom: 10px; white-space: pre-line; }
+        .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 4px; padding-right: 25px; }
+        .card-layer-badge { display: inline-block; font-size: 11px; color: #00d4ff; background: rgba(0, 212, 255, 0.12); border: 1px solid rgba(0, 212, 255, 0.3); padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+        .card-desc { margin-bottom: 10px; white-space: pre-line; color: #d5d5d5; }
         
         /* Галерея фото */
-        .popup-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+        .popup-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; }
         .popup-gallery.single-photo { grid-template-columns: 1fr; }
-        .popup-gallery a { display: block; width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; cursor: zoom-in; background: #1a1a1a; border: 1px solid #444; }
-        .popup-gallery.single-photo a { aspect-ratio: 16/11; max-height: 220px; }
+        .popup-gallery a { display: block; width: 100%; aspect-ratio: 16/10; overflow: hidden; border-radius: 8px; cursor: zoom-in; background: #1a1a1a; position: relative; border: 1px solid #3a3a3a; }
+        .popup-gallery.single-photo a { aspect-ratio: 16/11; }
         .popup-gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; display: block; }
-        .popup-gallery img:hover { transform: scale(1.03); }
+        .popup-gallery a:hover img { transform: scale(1.03); }
+        .zoom-hint { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,0.65); color: #fff; font-size: 11px; padding: 2px 6px; border-radius: 4px; pointer-events: none; }
+
+        /* Кнопки действий в карточке */
+        .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .action-btn { flex: 1; padding: 9px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px; border: none; transition: 0.2s; }
+        .route-btn { background-color: #ffcc00; color: #1a1a1a; }
+        .route-btn:hover { background-color: #e6b800; }
+        .share-btn { background-color: #333; color: #00d4ff; border: 1px solid #00d4ff; }
+        .share-btn:hover { background-color: rgba(0, 212, 255, 0.15); }
         
-        .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; transition: 0.2s; }
+        .admin-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .edit-btn { flex: 1; background-color: rgba(0, 212, 255, 0.15); color: #00d4ff; border: 1px solid #00d4ff; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .edit-btn:hover { background-color: #00d4ff; color: #1a1a1a; }
+        .delete-btn { flex: 1; background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
-        /* Мобильная выдвижная шторка (Bottom Sheet) */
+        /* Мобильная выдвижная шторка */
         #bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 0; height: 85vh;
             background-color: #242424; border-top: 1px solid #444;
@@ -48,19 +61,19 @@
         }
         #bottom-sheet.half { transform: translateY(42vh); }
         #bottom-sheet.full { transform: translateY(0); }
-        #sheet-drag-zone { padding: 12px 0 8px 0; touch-action: none; display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0; }
+        #sheet-drag-zone { padding: 12px 0 8px 0; touch-action: none; display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0; cursor: grab; }
         #sheet-handle { width: 42px; height: 5px; background-color: #666; border-radius: 3px; }
         #sheet-close-btn { position: absolute; right: 15px; top: 8px; background: #333; border: none; color: #aaa; width: 28px; height: 28px; border-radius: 50%; font-size: 18px; cursor: pointer; }
-        #sheet-body { overflow-y: auto; padding: 0 18px 40px 18px; flex-grow: 1; overscroll-behavior: contain; }
+        #sheet-body { overflow-y: auto; padding: 0 18px 45px 18px; flex-grow: 1; overscroll-behavior: contain; }
         @media (min-width: 769px) { #bottom-sheet { display: none !important; } }
 
-        /* Кнопки и сайдбар */
+        /* Меню и боковая панель */
         #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
-        #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; display: flex; flex-direction: column; }
+        #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 65px 20px 25px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         #sidebar h2 { font-size: 18px; margin-top: 0; margin-bottom: 5px; color: #00d4ff; }
         #location-count { font-size: 13px; color: #a0a0a0; margin-bottom: 10px; }
-        #search-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        #search-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; margin-bottom: 12px; box-sizing: border-box; }
         #location-list { flex-grow: 1; overflow-y: auto; }
         .location-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
         .location-item:hover { background-color: #333; }
@@ -68,42 +81,45 @@
         .location-item span { font-size: 11px; color: #00d4ff; }
 
         /* Блок роли внизу сайдбара */
-        #role-panel { margin-top: 15px; padding-top: 12px; border-top: 1px solid #444; flex-shrink: 0; }
-        #role-badge { font-size: 12px; color: #00d4ff; margin-bottom: 8px; font-weight: bold; }
-        .role-switch-btn { width: 100%; padding: 9px; border-radius: 6px; border: 1px solid #00d4ff; background: #1a1a1a; color: #00d4ff; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .role-switch-btn:hover { background: #00d4ff; color: #1a1a1a; }
+        #role-box { margin-top: 15px; padding-top: 12px; border-top: 1px solid #444; }
+        #role-badge { font-size: 12px; color: #00d4ff; border: 1px solid #00d4ff; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; text-align: center; }
+        #switch-role-btn { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #00d4ff; background: transparent; color: #00d4ff; cursor: pointer; font-weight: bold; font-size: 13px; }
+        #switch-role-btn:hover { background: rgba(0, 212, 255, 0.15); }
 
-        /* Кнопки на карте (добавление скрыто по умолчанию для обычных юзеров) */
-        #add-point-btn { display: none; position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        #add-point-btn.visible { display: flex; }
-        #locate-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: bottom 0.2s; }
-        #locate-btn.admin-offset { bottom: 100px; }
+        /* Плавающие кнопки справа */
+        #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
+        #draw-line-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 22px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; }
+        #locate-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+        body.is-admin #locate-btn { bottom: 170px; }
+        body.is-admin #add-point-btn { display: flex; }
+        body.is-admin #draw-line-btn { display: flex; }
 
-        /* Модальное окно выбора входа */
-        #auth-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* Форма добавления / редактирования точки */
+        #add-form, #line-form { position: fixed; bottom: 95px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.85); max-height: 75vh; overflow-y: auto; }
+        #add-form.open, #line-form.open { display: flex; }
+        @media (max-width: 768px) { #add-form, #line-form { right: 10px; left: 10px; width: auto; bottom: 90px; } }
+        #add-form input, #add-form select, #add-form textarea, #line-form input, #line-form select { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; font-size: 13px; }
+        .file-label { background-color: #1a1a1a; border: 1px dashed #00d4ff; color: #00d4ff; padding: 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 13px; margin-bottom: 8px; display: block; }
+        #file-count { font-size: 11px; color: #aaa; margin-top: -4px; margin-bottom: 10px; text-align: center; }
+        .primary-btn { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .secondary-btn { background-color: #444; color: white; border: none; padding: 9px; border-radius: 6px; cursor: pointer; margin-top: 6px; font-size: 13px; }
+
+        /* Модальное окно выбора роли / входа */
+        #auth-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 15px; }
         #auth-modal.hidden { display: none; }
-        .auth-box { background: #242424; border: 1px solid #444; border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .auth-box h3 { margin: 0 0 8px 0; color: #fff; font-size: 20px; }
-        .auth-box p { margin: 0 0 18px 0; color: #aaa; font-size: 13px; }
-        .auth-btn-guest { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #00d4ff; color: #1a1a1a; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px; }
-        .auth-btn-admin-toggle { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #555; background: transparent; color: #ccc; font-size: 13px; cursor: pointer; }
-        #admin-login-fields { display: none; flex-direction: column; margin-top: 14px; text-align: left; }
-        #admin-login-fields.open { display: flex; }
-        #admin-login-fields input { margin-bottom: 10px; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #1a1a1a; color: white; font-size: 14px; }
-        #admin-submit-btn { padding: 11px; border-radius: 8px; border: none; background: #00d4ff; color: #1a1a1a; font-weight: bold; cursor: pointer; }
+        .auth-box { background: #242424; border: 1px solid #00d4ff; border-radius: 14px; padding: 22px; width: 100%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; color: #fff; }
+        .auth-box h3 { margin: 0 0 8px 0; color: #00d4ff; font-size: 19px; }
+        .auth-box p { margin: 0 0 16px 0; font-size: 13px; color: #bbb; }
+        .auth-box input { width: 100%; box-sizing: border-box; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; font-size: 14px; }
+        .auth-btn-user { width: 100%; padding: 11px; border-radius: 8px; border: none; background: #00d4ff; color: #1a1a1a; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 10px; }
+        .auth-btn-admin { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #00d4ff; background: transparent; color: #00d4ff; font-weight: bold; font-size: 14px; cursor: pointer; }
+        #admin-login-fields { display: none; margin-top: 12px; border-top: 1px solid #3a3a3a; padding-top: 12px; }
+        #admin-login-fields.open { display: block; }
 
-        /* Форма добавления точки */
-        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
-        #add-form.open { display: flex; }
-        @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
-        #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
-        .file-label { background-color: #1a1a1a; border: 1px dashed #00d4ff; color: #00d4ff; padding: 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 13px; margin-bottom: 10px; display: block; }
-        #file-count { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
-        #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 6000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
         .leaflet-control-layers label { color: #e0e0e0; }
+        .pswp { z-index: 7000 !important; }
     </style>
 </head>
 <body>
@@ -111,14 +127,14 @@
     <!-- Окно выбора режима входа -->
     <div id="auth-modal">
         <div class="auth-box">
-            <h3>Fast Travel</h3>
+            <h3>Fast Travel Map</h3>
             <p>Выберите режим работы с картой</p>
-            <button class="auth-btn-guest" id="enter-guest-btn">Обычный пользователь</button>
-            <button class="auth-btn-admin-toggle" id="toggle-admin-btn">Вход для команды (Админ)</button>
+            <button id="enter-user-btn" class="auth-btn-user">Обычный пользователь (Просмотр)</button>
+            <button id="show-admin-login-btn" class="auth-btn-admin">Войти как Админ</button>
             <div id="admin-login-fields">
-                <input type="email" id="admin-email" placeholder="Email админа">
-                <input type="password" id="admin-pass" placeholder="Пароль">
-                <button id="admin-submit-btn">Войти как Админ</button>
+                <input type="email" id="admin-email" placeholder="Email администратора">
+                <input type="password" id="admin-password" placeholder="Пароль">
+                <button id="admin-submit-btn" class="auth-btn-user">Войти в панель Админа</button>
             </div>
         </div>
     </div>
@@ -129,14 +145,15 @@
         <input type="text" id="search-input" placeholder="Поиск по названию...">
         <div id="location-count">Загрузка...</div>
         <div id="location-list"></div>
-        <div id="role-panel">
-            <div id="role-badge">Режим: Просмотр</div>
-            <button class="role-switch-btn" id="switch-role-btn">Войти как Админ</button>
+        <div id="role-box">
+            <div id="role-badge">Роль: Гость</div>
+            <button id="switch-role-btn">Сменить роль / Войти</button>
         </div>
     </div>
 
     <div id="map"></div>
 
+    <!-- Выдвижная мобильная шторка -->
     <div id="bottom-sheet">
         <div id="sheet-drag-zone">
             <div id="sheet-handle"></div>
@@ -146,24 +163,40 @@
     </div>
 
     <button id="locate-btn" title="Моё местоположение">🎯</button>
+    <button id="draw-line-btn" title="Нарисовать маршрут">〰️</button>
     <button id="add-point-btn" title="Добавить точку">+</button>
 
+    <!-- Форма добавления / редактирования точки -->
     <div id="add-form">
-        <b style="color:#00d4ff; margin-bottom:6px;">Добавить точку</b>
+        <b id="form-title" style="color:#00d4ff; margin-bottom:6px;">Добавить точку</b>
         <p id="coords-hint" style="font-size:12px; color:#aaa; margin:0 0 10px 0;">Кликни по карте, чтобы поставить пин</p>
+        <input type="hidden" id="edit-point-id" value="">
         <input type="text" id="form-name" placeholder="Название" required>
         <textarea id="form-desc" placeholder="Описание" rows="2"></textarea>
         <label class="file-label" for="form-files">📷 Выбрать фото с устройства</label>
         <input type="file" id="form-files" accept="image/*" multiple style="display:none;">
         <div id="file-count">Файлы не выбраны</div>
-        <input type="text" id="form-images" placeholder="Или ссылки через запятую">
+        <input type="text" id="form-images" placeholder="Ссылки на фото (через запятую)">
         <select id="form-layer">
             <option value="Самара">Самара</option>
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
-        <button id="form-save">Сохранить точку</button>
-        <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
+        <button id="form-save" class="primary-btn">Сохранить точку</button>
+        <button id="form-cancel" class="secondary-btn">Отмена</button>
+    </div>
+
+    <!-- Форма рисования линии маршрута -->
+    <div id="line-form">
+        <b style="color:#00d4ff; margin-bottom:6px;">Новый маршрут (линия)</b>
+        <p id="line-hint" style="font-size:12px; color:#aaa; margin:0 0 10px 0;">Кликай по карте, чтобы ставить точки линии (точек: 0)</p>
+        <input type="text" id="line-name" placeholder="Название маршрута">
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button id="line-undo-btn" class="secondary-btn" style="flex:1; margin-top:0;">↩ Шаг назад</button>
+            <button id="line-clear-btn" class="secondary-btn" style="flex:1; margin-top:0;">Очистить</button>
+        </div>
+        <button id="line-save-btn" class="primary-btn">Сохранить маршрут</button>
+        <button id="line-cancel-btn" class="secondary-btn">Отмена</button>
     </div>
 
     <div id="toast"></div>
@@ -173,14 +206,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module">
         import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5.4.3/dist/photoswipe-lightbox.esm.js';
-        window.pswpLightbox = new PhotoSwipeLightbox({
-            gallery: '.popup-gallery',
-            children: 'a',
-            pswpModule: () => import('https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.esm.js'),
-            showHideAnimationType: 'fade',
-            closeOnVerticalDrag: true
-        });
-        window.pswpLightbox.init();
+        window.PhotoSwipeLightbox = PhotoSwipeLightbox;
+        window.pswpModule = () => import('https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.esm.js');
     </script>
 
     <script>
@@ -196,9 +223,7 @@
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        var isAdmin = false;
-
-        // Белая подсветка вокруг иконки точки
+        /* Белое свечение вокруг логотипа */
         var customIcon = L.divIcon({
             className: 'custom-marker',
             html: `<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.95));" />`,
@@ -221,10 +246,13 @@
         };
 
         var allPoints = [];
+        var rawLocationsMap = {};
         var markerStore = {};
         var userLocationMarker = null;
         var userAccuracyCircle = null;
         var tempDraftMarker = null;
+        var isAdmin = false;
+        var initialUrlPointHandled = false;
 
         function isMobile() {
             return window.innerWidth <= 768;
@@ -242,70 +270,66 @@
             }, 3500);
         }
 
-        /* --- УПРАВЛЕНИЕ РОЛЯМИ (ПОЛЬЗОВАТЕЛЬ / АДМИН) --- */
-        function updateRoleUI() {
-            const badge = document.getElementById('role-badge');
-            const switchBtn = document.getElementById('switch-role-btn');
-            const addBtn = document.getElementById('add-point-btn');
-            const locateBtn = document.getElementById('locate-btn');
-
+        /* --- АВТОРИЗАЦИЯ И РОЛИ --- */
+        function applyRoleUI(adminStatus, emailText) {
+            isAdmin = adminStatus;
             if (isAdmin) {
-                badge.innerText = 'Роль: Админ (полный доступ)';
-                switchBtn.innerText = 'Выйти из Админа';
-                addBtn.classList.add('visible');
-                locateBtn.classList.add('admin-offset');
+                document.body.classList.add('is-admin');
+                document.getElementById('role-badge').innerText = `Роль: Админ (${emailText || 'вход выполнен'})`;
+                document.getElementById('switch-role-btn').innerText = 'Выйти из Админа';
             } else {
-                badge.innerText = 'Роль: Обычный пользователь';
-                switchBtn.innerText = 'Войти как Админ';
-                addBtn.classList.remove('visible');
-                locateBtn.classList.remove('admin-offset');
+                document.body.classList.remove('is-admin');
+                document.getElementById('role-badge').innerText = 'Роль: Обычный пользователь';
+                document.getElementById('switch-role-btn').innerText = 'Войти как Админ';
                 closeAddForm();
+                closeLineForm();
             }
         }
 
-        async function checkAuthSession() {
+        async function initAuth() {
             const { data } = await db.auth.getSession();
-            if (data && data.session) {
-                isAdmin = true;
+            if (data && data.session && data.session.user) {
+                applyRoleUI(true, data.session.user.email);
                 document.getElementById('auth-modal').classList.add('hidden');
-                updateRoleUI();
                 loadData();
-            } else if (sessionStorage.getItem('ft_guest_mode') === '1') {
-                isAdmin = false;
-                document.getElementById('auth-modal').classList.add('hidden');
-                updateRoleUI();
-                loadData();
+            } else {
+                const savedGuest = sessionStorage.getItem('ft_guest_mode');
+                if (savedGuest === '1') {
+                    applyRoleUI(false);
+                    document.getElementById('auth-modal').classList.add('hidden');
+                    loadData();
+                } else {
+                    document.getElementById('auth-modal').classList.remove('hidden');
+                }
             }
         }
 
-        document.getElementById('enter-guest-btn').addEventListener('click', function() {
+        document.getElementById('enter-user-btn').addEventListener('click', function() {
             sessionStorage.setItem('ft_guest_mode', '1');
-            isAdmin = false;
+            applyRoleUI(false);
             document.getElementById('auth-modal').classList.add('hidden');
-            updateRoleUI();
             loadData();
         });
 
-        document.getElementById('toggle-admin-btn').addEventListener('click', function() {
+        document.getElementById('show-admin-login-btn').addEventListener('click', function() {
             document.getElementById('admin-login-fields').classList.toggle('open');
         });
 
         document.getElementById('admin-submit-btn').addEventListener('click', async function() {
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-pass').value;
+            var email = document.getElementById('admin-email').value.trim();
+            var password = document.getElementById('admin-password').value;
             if (!email || !password) {
-                showToast('Введите Email и пароль', true);
+                showToast('Введите Email и пароль админа', true);
                 return;
             }
-            const { error } = await db.auth.signInWithPassword({ email: email, password: password });
+            const { data, error } = await db.auth.signInWithPassword({ email: email, password: password });
             if (error) {
                 showToast('Ошибка входа: ' + error.message, true);
             } else {
-                isAdmin = true;
                 sessionStorage.removeItem('ft_guest_mode');
+                applyRoleUI(true, data.user.email);
                 document.getElementById('auth-modal').classList.add('hidden');
-                updateRoleUI();
-                showToast('Вы вошли как Админ');
+                showToast('Вы вошли как Администратор');
                 loadData();
             }
         });
@@ -313,9 +337,7 @@
         document.getElementById('switch-role-btn').addEventListener('click', async function() {
             if (isAdmin) {
                 await db.auth.signOut();
-                isAdmin = false;
-                sessionStorage.setItem('ft_guest_mode', '1');
-                updateRoleUI();
+                applyRoleUI(false);
                 showToast('Вы вышли из режима Админа');
                 loadData();
             } else {
@@ -325,18 +347,61 @@
             }
         });
 
-        /* --- ВЫДВИЖНАЯ ШТОРКА --- */
+        /* --- ЛУПА / ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО (PHOTOSWIPE) --- */
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('.popup-gallery a');
+            if (!link) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const gallery = link.closest('.popup-gallery');
+            const links = Array.from(gallery.querySelectorAll('a'));
+            const dataSource = links.map(function(a) {
+                const img = a.querySelector('img');
+                return {
+                    src: a.getAttribute('href'),
+                    w: parseInt(a.getAttribute('data-pswp-width'), 10) || (img && img.naturalWidth) || 1200,
+                    h: parseInt(a.getAttribute('data-pswp-height'), 10) || (img && img.naturalHeight) || 900
+                };
+            });
+
+            if (window.PhotoSwipeLightbox && window.pswpModule) {
+                const lightbox = new window.PhotoSwipeLightbox({
+                    dataSource: dataSource,
+                    pswpModule: window.pswpModule,
+                    showHideAnimationType: 'fade',
+                    closeOnVerticalDrag: true
+                });
+                lightbox.init();
+                lightbox.loadAndOpen(links.indexOf(link));
+            }
+        });
+
+        function updatePhotoSizes() {
+            document.querySelectorAll('.popup-gallery a').forEach(function(link) {
+                const img = new Image();
+                img.onload = function() {
+                    link.setAttribute('data-pswp-width', this.naturalWidth);
+                    link.setAttribute('data-pswp-height', this.naturalHeight);
+                };
+                img.src = link.getAttribute('href');
+            });
+        }
+
+        /* --- ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) --- */
         const sheet = document.getElementById('bottom-sheet');
         const sheetBody = document.getElementById('sheet-body');
         const dragZone = document.getElementById('sheet-drag-zone');
-        let startY = 0, currentY = 0, isDragging = false;
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
 
         function openBottomSheet(htmlContent) {
             sheetBody.innerHTML = htmlContent;
             sheetBody.scrollTop = 0;
             sheet.classList.remove('full');
             sheet.classList.add('half');
-            prepareGalleryPhotos();
+            updatePhotoSizes();
         }
 
         function closeBottomSheet() {
@@ -344,8 +409,13 @@
         }
 
         document.getElementById('sheet-close-btn').addEventListener('click', closeBottomSheet);
+
         map.on('click', function() {
-            if (!document.getElementById('add-form').classList.contains('open')) closeBottomSheet();
+            const addOpen = document.getElementById('add-form').classList.contains('open');
+            const lineOpen = document.getElementById('line-form').classList.contains('open');
+            if (!addOpen && !lineOpen) {
+                closeBottomSheet();
+            }
         });
 
         dragZone.addEventListener('touchstart', function(e) {
@@ -371,41 +441,54 @@
             sheet.style.transform = '';
             const deltaY = currentY - startY;
             if (Math.abs(deltaY) < 20) return;
-            if (deltaY < -50) { sheet.classList.remove('half'); sheet.classList.add('full'); }
-            else if (deltaY > 50) {
-                if (sheet.classList.contains('full')) { sheet.classList.remove('full'); sheet.classList.add('half'); }
-                else closeBottomSheet();
+            if (deltaY < -50) {
+                sheet.classList.remove('half');
+                sheet.classList.add('full');
+            } else if (deltaY > 50) {
+                if (sheet.classList.contains('full')) {
+                    sheet.classList.remove('full');
+                    sheet.classList.add('half');
+                } else {
+                    closeBottomSheet();
+                }
             }
-            startY = 0; currentY = 0;
+            startY = 0;
+            currentY = 0;
         });
 
-        /* --- ПАРСИНГ И ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО --- */
-        function parseImageUrls(rawString) {
-            if (!rawString || rawString.trim() === '') return [];
-            const parts = rawString.split(',');
-            const result = [];
-            for (let i = 0; i < parts.length; i++) {
-                const part = parts.at(i).trim();
-                if (part.startsWith('data:image/') && i + 1 < parts.length) {
-                    result.push(part + ',' + parts.at(i + 1).trim());
+        /* Разбор ссылок на фото (поддерживает и обычные URL, и data:image base64) */
+        function parseImageUrls(rawStr) {
+            if (!rawStr || rawStr.trim() === '') return [];
+            var parts = rawStr.split(',');
+            var result = [];
+            for (var i = 0; i < parts.length; i++) {
+                var item = parts[i].trim();
+                if (!item) continue;
+                if (item.startsWith('data:image') && i + 1 < parts.length) {
+                    result.push(item + ',' + parts[i + 1].trim());
                     i++;
-                } else if (part.length > 0) {
-                    result.push(part);
+                } else {
+                    result.push(item);
                 }
             }
             return result;
         }
 
-        function prepareGalleryPhotos() {
-            document.querySelectorAll('.popup-gallery a').forEach(function(link) {
-                const img = new Image();
-                img.onload = function() {
-                    link.setAttribute('data-pswp-width', this.naturalWidth || 1200);
-                    link.setAttribute('data-pswp-height', this.naturalHeight || 900);
-                };
-                img.src = link.getAttribute('href');
-            });
-        }
+        /* --- ПОДЕЛИТЬСЯ ТОЧКОЙ (ПРЯМАЯ ССЫЛКА) --- */
+        window.sharePoint = function(id) {
+            var url = new URL(window.location.href);
+            url.searchParams.set('point', id);
+            var shareUrl = url.toString();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareUrl).then(function() {
+                    showToast('Ссылка на точку скопирована!');
+                }).catch(function() {
+                    prompt('Скопируйте ссылку на точку:', shareUrl);
+                });
+            } else {
+                prompt('Скопируйте ссылку на точку:', shareUrl);
+            }
+        };
 
         /* --- ЗАГРУЗКА ДАННЫХ --- */
         async function loadData() {
@@ -417,14 +500,23 @@
                 lineLayer.clearLayers();
                 document.getElementById('location-list').innerHTML = '';
                 allPoints = [];
+                rawLocationsMap = {};
                 markerStore = {};
                 var count = 0;
 
                 data.forEach(function(loc) {
+                    rawLocationsMap[loc.id] = loc;
+
                     if (loc.geometry_type === 'LineString') {
                         try {
-                            if (Array.isArray(loc.coordinates) && loc.coordinates.length > 0) {
-                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 2.5, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
+                            var coords = typeof loc.coordinates === 'string' ? JSON.parse(loc.coordinates) : loc.coordinates;
+                            if (Array.isArray(coords) && coords.length > 0) {
+                                var poly = L.polyline(coords, { color: '#ffffff', weight: 2.5, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
+                                if (isAdmin) {
+                                    poly.bindPopup(`<div class="card-content"><b>${loc.name || 'Маршрут'}</b><button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить маршрут</button></div>`);
+                                } else if (loc.name) {
+                                    poly.bindPopup(`<div class="card-content"><b>${loc.name}</b></div>`);
+                                }
                                 count++;
                             }
                         } catch(e) {}
@@ -437,26 +529,49 @@
                         var gridClass = urls.length === 1 ? 'popup-gallery single-photo' : 'popup-gallery';
                         imageHtml = `<div class="${gridClass}">`;
                         urls.forEach(function(url) {
-                            imageHtml += `<a href="${url}" data-pswp-width="1200" data-pswp-height="900"><img src="${url}" alt="Фото"></a>`;
+                            imageHtml += `<a href="${url}" data-pswp-width="1200" data-pswp-height="900"><img src="${url}" alt="Фото" loading="lazy"><span class="zoom-hint">🔍</span></a>`;
                         });
                         imageHtml += '</div>';
                     }
 
-                    var deleteBtnHtml = isAdmin ? `<button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button>` : '';
-                    var cardHtml = `<div class="card-content"><b>${loc.name}</b><div class="card-desc">${loc.description || 'Без описания'}</div>${imageHtml}${deleteBtnHtml}</div>`;
+                    var yandexUrl = `https://yandex.ru/maps/?rtext=~${loc.lat},${loc.lng}`;
+                    var publicActionsHtml = `
+                        <div class="card-actions">
+                            <a href="${yandexUrl}" target="_blank" rel="noopener" class="action-btn route-btn">🧭 Маршрут</a>
+                            <button class="action-btn share-btn" onclick="sharePoint(${loc.id})">🔗 Поделиться</button>
+                        </div>
+                    `;
+
+                    var adminActionsHtml = isAdmin ? `
+                        <div class="admin-actions">
+                            <button class="edit-btn" onclick="openEditPoint(${loc.id})">✏️ Изменить</button>
+                            <button class="delete-btn" onclick="deletePoint(${loc.id})">🗑 Удалить</button>
+                        </div>
+                    ` : '';
+
+                    var cardHtml = `
+                        <div class="card-content">
+                            <b>${loc.name}</b>
+                            <span class="card-layer-badge">${loc.layer || 'Точка'}</span>
+                            <div class="card-desc">${loc.description || 'Без описания'}</div>
+                            ${imageHtml}
+                            ${publicActionsHtml}
+                            ${adminActionsHtml}
+                        </div>
+                    `;
+
                     var marker = L.marker(L.latLng(loc.lat, loc.lng), { icon: customIcon });
 
                     marker.on('click', function(e) {
-                        L.DomEvent.stopPropagation(e);
+                        if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
                         if (isMobile()) {
                             openBottomSheet(cardHtml);
                             const targetPoint = map.project(L.latLng(loc.lat, loc.lng), map.getZoom());
                             targetPoint.y += window.innerHeight * 0.18;
                             map.panTo(map.unproject(targetPoint, map.getZoom()), { animate: true });
                         } else {
-                            marker.unbindPopup();
-                            marker.bindPopup(cardHtml, { maxWidth: 320 }).openPopup();
-                            setTimeout(prepareGalleryPhotos, 50);
+                            marker.bindPopup(cardHtml).openPopup();
+                            setTimeout(updatePhotoSizes, 50);
                         }
                     });
 
@@ -467,15 +582,39 @@
                     else if (layerName.includes('самара') || layerName.includes('samara')) targetGroupKey = "Самара";
 
                     clusterGroups[targetGroupKey].addLayer(marker);
-                    allPoints.push({ name: loc.name, layer: targetGroupKey, lat: loc.lat, lng: loc.lng, marker: marker, group: clusterGroups[targetGroupKey] });
+                    allPoints.push({
+                        id: loc.id,
+                        name: loc.name,
+                        layer: targetGroupKey,
+                        lat: loc.lat,
+                        lng: loc.lng,
+                        marker: marker,
+                        group: clusterGroups[targetGroupKey]
+                    });
                     count++;
                 });
 
                 document.getElementById('location-count').innerText = `Объектов на карте: ${count}`;
                 allPoints.sort(function(a, b) { return a.name.localeCompare(b.name); });
                 renderList(allPoints);
+
+                /* Переход к точке по прямой ссылке (?point=ID) */
+                if (!initialUrlPointHandled) {
+                    initialUrlPointHandled = true;
+                    var urlParams = new URLSearchParams(window.location.search);
+                    var targetPointId = urlParams.get('point');
+                    if (targetPointId) {
+                        var found = allPoints.find(function(p) { return String(p.id) === String(targetPointId); });
+                        if (found) {
+                            if (!map.hasLayer(found.group)) map.addLayer(found.group);
+                            found.group.zoomToShowLayer(found.marker, function() {
+                                found.marker.fire('click');
+                            });
+                        }
+                    }
+                }
             } catch (err) {
-                document.getElementById('location-list').innerHTML = `<p style='color:#ff4d4d;'>Ошибка доступа к базе: ${err.message}</p>`;
+                document.getElementById('location-list').innerHTML = "<p style='color:red;'>Ошибка загрузки данных</p>";
             }
         }
 
@@ -497,19 +636,26 @@
             });
         }
 
-        map.on('overlayadd', function(e) { if (e.name === 'Питер') map.flyTo(L.latLng(59.934127, 30.305973), 10, { duration: 1.5 }); });
-        map.on('overlayremove', function(e) { if (e.name === 'Питер') map.flyTo(L.latLng(53.195873, 50.100193), 10, { duration: 1.5 }); });
+        map.on('overlayadd', function(e) {
+            if (e.name === 'Питер') map.flyTo(L.latLng(59.934127, 30.305973), 10, { duration: 1.5 });
+        });
+        map.on('overlayremove', function(e) {
+            if (e.name === 'Питер') map.flyTo(L.latLng(53.195873, 50.100193), 10, { duration: 1.5 });
+        });
+
         L.control.layers(null, layers, { collapsed: true, position: 'topright' }).addTo(map);
+        initAuth();
 
-        checkAuthSession();
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
 
-        document.getElementById('menu-btn').addEventListener('click', function() { document.getElementById('sidebar').classList.toggle('open'); });
         document.getElementById('search-input').addEventListener('input', function(e) {
             var text = e.target.value.toLowerCase();
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
-        /* --- ГЕОЛОКАЦИЯ GPS --- */
+        /* --- ГЕОЛОКАЦИЯ (GPS) --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
             if (!navigator.geolocation) {
                 showToast('Браузер не поддерживает геолокацию', true);
@@ -538,7 +684,7 @@
             );
         });
 
-        /* --- ДОБАВЛЕНИЕ ТОЧЕК И ФОТО (ТОЛЬКО АДМИН) --- */
+        /* --- СЖАТИЕ ФОТО --- */
         document.getElementById('form-files').addEventListener('change', function(e) {
             var count = e.target.files ? e.target.files.length : 0;
             document.getElementById('file-count').innerText = count > 0 ? `Выбрано файлов: ${count}` : 'Файлы не выбраны';
@@ -552,12 +698,14 @@
                     img.onload = function() {
                         var canvas = document.createElement('canvas');
                         var maxDim = 1280;
-                        var w = img.width, h = img.height;
+                        var w = img.width;
+                        var h = img.height;
                         if (w > maxDim || h > maxDim) {
                             if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
                             else { w = Math.round(w * maxDim / h); h = maxDim; }
                         }
-                        canvas.width = w; canvas.height = h;
+                        canvas.width = w;
+                        canvas.height = h;
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         canvas.toBlob(function(blob) {
                             resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', 0.8) });
@@ -569,47 +717,90 @@
             });
         }
 
-        var newLat = 0, newLng = 0;
+        /* --- ДОБАВЛЕНИЕ И РЕДАКТИРОВАНИЕ ТОЧЕК (ДЛЯ АДМИНА) --- */
+        var newLat = 0;
+        var newLng = 0;
 
         function setDraftPoint(latlng) {
-            newLat = latlng.lat; newLng = latlng.lng;
-            document.getElementById('coords-hint').innerText = `Выбрано: ${newLat.toFixed(5)}, ${newLng.toFixed(5)} (пин можно двигать)`;
+            newLat = latlng.lat;
+            newLng = latlng.lng;
+            document.getElementById('coords-hint').innerText = `Координаты: ${newLat.toFixed(5)}, ${newLng.toFixed(5)} (пин можно двигать)`;
             if (!tempDraftMarker) {
                 tempDraftMarker = L.marker(latlng, { draggable: true }).addTo(map);
                 tempDraftMarker.on('dragend', function(ev) {
                     var pos = ev.target.getLatLng();
-                    newLat = pos.lat; newLng = pos.lng;
-                    document.getElementById('coords-hint').innerText = `Выбрано: ${newLat.toFixed(5)}, ${newLng.toFixed(5)}`;
+                    newLat = pos.lat;
+                    newLng = pos.lng;
+                    document.getElementById('coords-hint').innerText = `Координаты: ${newLat.toFixed(5)}, ${newLng.toFixed(5)}`;
                 });
-            } else tempDraftMarker.setLatLng(latlng);
+            } else {
+                tempDraftMarker.setLatLng(latlng);
+            }
         }
 
-        function onMapClickAdd(e) { setDraftPoint(e.latlng); }
+        function onMapClickForPoint(e) {
+            setDraftPoint(e.latlng);
+        }
 
         function closeAddForm() {
             document.getElementById('add-form').classList.remove('open');
-            map.off('click', onMapClickAdd);
-            if (tempDraftMarker) { map.removeLayer(tempDraftMarker); tempDraftMarker = null; }
-            newLat = 0; newLng = 0;
+            map.off('click', onMapClickForPoint);
+            if (tempDraftMarker) {
+                map.removeLayer(tempDraftMarker);
+                tempDraftMarker = null;
+            }
+            newLat = 0;
+            newLng = 0;
+            document.getElementById('edit-point-id').value = '';
+            document.getElementById('form-title').innerText = 'Добавить точку';
+            document.getElementById('form-name').value = '';
+            document.getElementById('form-desc').value = '';
+            document.getElementById('form-images').value = '';
+            document.getElementById('form-files').value = '';
+            document.getElementById('file-count').innerText = 'Файлы не выбраны';
             document.getElementById('coords-hint').innerText = 'Кликни по карте, чтобы поставить пин';
         }
 
         document.getElementById('add-point-btn').addEventListener('click', function() {
             if (!isAdmin) return;
             var form = document.getElementById('add-form');
-            if (form.classList.contains('open')) closeAddForm();
-            else {
+            if (form.classList.contains('open')) {
+                closeAddForm();
+            } else {
+                closeLineForm();
                 closeBottomSheet();
                 form.classList.add('open');
                 showToast('Кликни по карте, чтобы выбрать место');
-                map.on('click', onMapClickAdd);
+                map.on('click', onMapClickForPoint);
             }
         });
+
+        window.openEditPoint = function(id) {
+            if (!isAdmin) return;
+            var loc = rawLocationsMap[id];
+            if (!loc) return;
+
+            map.closePopup();
+            closeBottomSheet();
+            closeLineForm();
+
+            document.getElementById('edit-point-id').value = loc.id;
+            document.getElementById('form-title').innerText = 'Редактировать точку';
+            document.getElementById('form-name').value = loc.name || '';
+            document.getElementById('form-desc').value = loc.description || '';
+            document.getElementById('form-images').value = loc.image_url || '';
+            document.getElementById('form-layer').value = loc.layer || 'Самара';
+
+            setDraftPoint(L.latLng(loc.lat, loc.lng));
+            document.getElementById('add-form').classList.add('open');
+            map.on('click', onMapClickForPoint);
+        };
 
         document.getElementById('form-cancel').addEventListener('click', closeAddForm);
 
         document.getElementById('form-save').addEventListener('click', async function() {
             if (!isAdmin) return;
+            var editId = document.getElementById('edit-point-id').value;
             var name = document.getElementById('form-name').value.trim();
             var desc = document.getElementById('form-desc').value.trim();
             var manualUrls = document.getElementById('form-images').value.trim();
@@ -618,13 +809,13 @@
             var saveBtn = document.getElementById('form-save');
 
             if (!name || newLat === 0) {
-                showToast('Введи название и кликни по карте!', true);
+                showToast('Введи название и выбери место на карте!', true);
                 return;
             }
 
             saveBtn.disabled = true;
             saveBtn.innerText = 'Сохранение...';
-            var finalUrls = manualUrls ? manualUrls.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; }) : [];
+            var finalUrls = parseImageUrls(manualUrls);
 
             if (fileInput.files && fileInput.files.length > 0) {
                 for (var i = 0; i < fileInput.files.length; i++) {
@@ -640,40 +831,154 @@
                 }
             }
 
-            const { error } = await db.from('locations').insert([{
-                name: name, description: desc, image_url: finalUrls.join(', '),
-                lat: newLat, lng: newLng, layer: layer, geometry_type: 'Point', coordinates: '[]'
-            }]);
+            var payload = {
+                name: name,
+                description: desc,
+                image_url: finalUrls.join(', '),
+                lat: newLat,
+                lng: newLng,
+                layer: layer
+            };
+
+            var dbError = null;
+            if (editId) {
+                const { error } = await db.from('locations').update(payload).eq('id', editId);
+                dbError = error;
+            } else {
+                payload.geometry_type = 'Point';
+                payload.coordinates = '[]';
+                const { error } = await db.from('locations').insert([payload]);
+                dbError = error;
+            }
 
             saveBtn.disabled = false;
             saveBtn.innerText = 'Сохранить точку';
 
-            if (error) showToast(`Ошибка: ${error.message}`, true);
-            else {
-                showToast('Точка добавлена!');
-                document.getElementById('form-name').value = '';
-                document.getElementById('form-desc').value = '';
-                document.getElementById('form-images').value = '';
-                fileInput.value = '';
-                document.getElementById('file-count').innerText = 'Файлы не выбраны';
+            if (dbError) {
+                showToast(`Ошибка: ${dbError.message}`, true);
+            } else {
+                showToast(editId ? 'Точка обновлена!' : 'Точка добавлена!');
                 closeAddForm();
                 loadData();
             }
         });
 
+        /* --- РИСОВАНИЕ ЛИНИЙ МАРШРУТОВ (ДЛЯ АДМИНА) --- */
+        var draftLineCoords = [];
+        var draftPolyline = null;
+        var draftLineMarkers = [];
+
+        function updateDraftLineUI() {
+            document.getElementById('line-hint').innerText = `Кликай по карте, чтобы ставить точки линии (точек: ${draftLineCoords.length})`;
+            if (draftPolyline) {
+                draftPolyline.setLatLngs(draftLineCoords);
+            } else if (draftLineCoords.length > 0) {
+                draftPolyline = L.polyline(draftLineCoords, { color: '#00d4ff', weight: 3, dashArray: '6, 6' }).addTo(map);
+            }
+        }
+
+        function onMapClickForLine(e) {
+            var coord = [Number(e.latlng.lat.toFixed(6)), Number(e.latlng.lng.toFixed(6))];
+            draftLineCoords.push(coord);
+            var dot = L.circleMarker(e.latlng, { radius: 5, color: '#ffffff', fillColor: '#00d4ff', fillOpacity: 1, weight: 2 }).addTo(map);
+            draftLineMarkers.push(dot);
+            updateDraftLineUI();
+        }
+
+        function clearDraftLine() {
+            draftLineCoords = [];
+            if (draftPolyline) {
+                map.removeLayer(draftPolyline);
+                draftPolyline = null;
+            }
+            draftLineMarkers.forEach(function(m) { map.removeLayer(m); });
+            draftLineMarkers = [];
+            updateDraftLineUI();
+        }
+
+        function closeLineForm() {
+            document.getElementById('line-form').classList.remove('open');
+            map.off('click', onMapClickForLine);
+            clearDraftLine();
+            document.getElementById('line-name').value = '';
+        }
+
+        document.getElementById('draw-line-btn').addEventListener('click', function() {
+            if (!isAdmin) return;
+            var form = document.getElementById('line-form');
+            if (form.classList.contains('open')) {
+                closeLineForm();
+            } else {
+                closeAddForm();
+                closeBottomSheet();
+                form.classList.add('open');
+                showToast('Кликай по карте, чтобы нарисовать маршрут');
+                map.on('click', onMapClickForLine);
+            }
+        });
+
+        document.getElementById('line-undo-btn').addEventListener('click', function() {
+            if (draftLineCoords.length > 0) {
+                draftLineCoords.pop();
+                var lastDot = draftLineMarkers.pop();
+                if (lastDot) map.removeLayer(lastDot);
+                updateDraftLineUI();
+            }
+        });
+
+        document.getElementById('line-clear-btn').addEventListener('click', clearDraftLine);
+        document.getElementById('line-cancel-btn').addEventListener('click', closeLineForm);
+
+        document.getElementById('line-save-btn').addEventListener('click', async function() {
+            if (!isAdmin) return;
+            var lineName = document.getElementById('line-name').value.trim() || 'Новый маршрут';
+            if (draftLineCoords.length < 2) {
+                showToast('Поставь минимум 2 точки на карте для маршрута!', true);
+                return;
+            }
+            var btn = document.getElementById('line-save-btn');
+            btn.disabled = true;
+            btn.innerText = 'Сохранение...';
+
+            const { error } = await db.from('locations').insert([{
+                name: lineName,
+                description: '',
+                lat: draftLineCoords[0][0],
+                lng: draftLineCoords[0][1],
+                layer: 'Маршруты',
+                geometry_type: 'LineString',
+                coordinates: draftLineCoords
+            }]);
+
+            btn.disabled = false;
+            btn.innerText = 'Сохранить маршрут';
+
+            if (error) {
+                showToast(`Ошибка: ${error.message}`, true);
+            } else {
+                showToast('Маршрут сохранён!');
+                closeLineForm();
+                loadData();
+            }
+        });
+
+        /* --- УДАЛЕНИЕ ТОЧКИ / МАРШРУТА --- */
         window.deletePoint = async function(id) {
             if (!isAdmin) return;
-            if (confirm('Точно удалить эту точку?')) {
+            if (confirm('Точно удалить этот объект?')) {
                 const { error } = await db.from('locations').delete().eq('id', id);
-                if (error) showToast(`Ошибка при удалении: ${error.message}`, true);
-                else {
+                if (error) {
+                    showToast(`Ошибка при удалении: ${error.message}`, true);
+                } else {
                     map.closePopup();
                     closeBottomSheet();
                     if (markerStore[id]) {
-                        Object.values(clusterGroups).forEach(function(g) { if (g.hasLayer(markerStore[id])) g.removeLayer(markerStore[id]); });
+                        Object.values(clusterGroups).forEach(function(g) {
+                            if (g.hasLayer(markerStore[id])) g.removeLayer(markerStore[id]);
+                        });
                         delete markerStore[id];
                     }
-                    showToast('Точка удалена!');
+                    showToast('Объект удалён!');
                     loadData();
                 }
             }
