@@ -276,6 +276,19 @@
             });
         }
 
+        // Обработчик событий слоев (чтобы карта не прыгала)
+        map.on('baselayerchange', function(e) {
+            if (e.name === 'Питер') {
+                // Если включили Питер — летим туда
+                if (map.hasLayer(clusterGroups["Питер"])) {
+                    map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
+                } else {
+                    // Если выключили Питер — возвращаемся в Самару
+                    map.flyTo([53.195873, 50.100193], 10, { duration: 1.5 });
+                }
+            }
+        });
+
         L.control.layers(null, layers, { collapsed: false, position: 'topright' }).addTo(map);
         loadData();
 
@@ -339,7 +352,6 @@
                 } else {
                     map.closePopup();
                     if (markerStore[id]) {
-                        // Удаляем маркер из всех возможных кластеров
                         Object.values(clusterGroups).forEach(group => {
                             if (group.hasLayer(markerStore[id])) {
                                 group.removeLayer(markerStore[id]);
