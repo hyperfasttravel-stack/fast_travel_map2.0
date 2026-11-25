@@ -11,11 +11,17 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: Arial, sans-serif; overflow: hidden; }
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
+        
+        /* Кластеры */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 212, 255, 0.6) !important; border: 2px solid #fff !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #1a1a1a !important; color: #00d4ff !important; font-weight: bold; }
+        
+        /* Попап на ПК */
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
         .leaflet-popup-tip { background-color: #2a2a2a; }
         .leaflet-popup-content { max-width: 300px; margin: 0; padding: 0; }
+        
+        /* Карточка точки */
         .card-content { padding: 15px; font-size: 14px; line-height: 1.5; color: #e0e0e0; }
         .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 6px; padding-right: 25px; }
         .card-desc { margin-bottom: 10px; white-space: pre-line; }
@@ -25,6 +31,7 @@
         .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; }
         .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
+        /* Мобильная выдвижная шторка (Bottom Sheet) */
         #bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 0; height: 85vh;
             background-color: #242424; border-top: 1px solid #444;
@@ -41,20 +48,59 @@
         #sheet-body { overflow-y: auto; padding: 0 18px 40px 18px; flex-grow: 1; overscroll-behavior: contain; }
         @media (min-width: 769px) { #bottom-sheet { display: none !important; } }
 
+        /* Верхнее меню и боковая панель */
         #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
-        #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
+        #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; display: flex; flex-direction: column; }
         #sidebar.open { left: 0; }
         #sidebar h2 { font-size: 18px; margin-top: 0; margin-bottom: 5px; color: #00d4ff; }
         #location-count { font-size: 13px; color: #a0a0a0; margin-bottom: 10px; }
         #search-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        #location-list { flex-grow: 1; overflow-y: auto; }
         .location-item { padding: 10px; border-bottom: 1px solid #444; cursor: pointer; }
         .location-item:hover { background-color: #333; }
         .location-item strong { display: block; font-size: 14px; color: #e0e0e0; }
         .location-item span { font-size: 11px; color: #00d4ff; }
 
+        /* Блок статуса аккаунта внизу сайдбара */
+        #auth-status-box { margin-top: 15px; padding-top: 12px; border-top: 1px solid #444; font-size: 13px; }
+        #role-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-bottom: 8px; }
+        .badge-admin { background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid #00d4ff; }
+        .badge-user { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid #555; }
+        #auth-switch-btn { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #00d4ff; background: transparent; color: #00d4ff; cursor: pointer; font-weight: bold; }
+        #auth-switch-btn:hover { background: rgba(0, 212, 255, 0.15); }
+
+        /* Модальное окно входа / выбора роли */
+        #auth-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 5000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        #auth-modal.hidden { display: none; }
+        .auth-card {
+            background: #242424; border: 1px solid #00d4ff; border-radius: 16px;
+            padding: 24px; width: 100%; max-width: 340px; color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center;
+        }
+        .auth-card h3 { margin: 0 0 8px 0; color: #00d4ff; font-size: 20px; }
+        .auth-card p { margin: 0 0 18px 0; color: #aaa; font-size: 13px; line-height: 1.4; }
+        .auth-btn {
+            width: 100%; padding: 12px; border-radius: 8px; border: none;
+            font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 10px;
+        }
+        .auth-btn-guest { background: #333; color: #fff; border: 1px solid #555; }
+        .auth-btn-guest:hover { background: #444; }
+        .auth-btn-primary { background: #00d4ff; color: #1a1a1a; }
+        .auth-btn-primary:hover { background: #00b0d4; }
+        .auth-divider { margin: 14px 0; font-size: 12px; color: #777; position: relative; }
+        .auth-card input {
+            width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px;
+            border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box;
+        }
+
+        /* Плавающие кнопки */
         #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         #locate-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
 
+        /* Форма добавления точки */
         #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
         #add-form.open { display: flex; }
         @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
@@ -62,20 +108,42 @@
         .file-label { background-color: #1a1a1a; border: 1px dashed #00d4ff; color: #00d4ff; padding: 8px; border-radius: 6px; text-align: center; cursor: pointer; font-size: 13px; margin-bottom: 10px; display: block; }
         #file-count { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
         #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 4000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
+        
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 6000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
         .leaflet-control-layers label { color: #e0e0e0; }
     </style>
 </head>
 <body>
+
+    <!-- Окно выбора роли при входе -->
+    <div id="auth-modal">
+        <div class="auth-card">
+            <h3>Fast Travel Map</h3>
+            <p>Выберите режим работы с картой</p>
+            <button class="auth-btn auth-btn-guest" id="enter-guest-btn">👤 Обычный пользователь<br><span style="font-size:11px; font-weight:normal; color:#aaa;">Просмотр и добавление точек</span></button>
+            <div class="auth-divider">— или вход для команды —</div>
+            <input type="email" id="login-email" placeholder="Email администратора">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <button class="auth-btn auth-btn-primary" id="login-admin-btn">🔑 Войти как Админ</button>
+        </div>
+    </div>
+
     <button id="menu-btn">☰</button>
     <div id="sidebar">
         <h2>Маршруты и точки</h2>
         <input type="text" id="search-input" placeholder="Поиск по названию...">
         <div id="location-count">Загрузка...</div>
         <div id="location-list"></div>
+        <div id="auth-status-box">
+            <div id="role-badge" class="badge-user">Роль: Пользователь</div>
+            <button id="auth-switch-btn">Войти как Админ</button>
+        </div>
     </div>
+
     <div id="map"></div>
+
+    <!-- Выдвижная мобильная шторка -->
     <div id="bottom-sheet">
         <div id="sheet-drag-zone">
             <div id="sheet-handle"></div>
@@ -83,8 +151,10 @@
         </div>
         <div id="sheet-body"></div>
     </div>
+
     <button id="locate-btn" title="Моё местоположение">🎯</button>
     <button id="add-point-btn" title="Добавить точку">+</button>
+
     <div id="add-form">
         <b style="color:#00d4ff; margin-bottom:6px;">Добавить точку</b>
         <p id="coords-hint" style="font-size:12px; color:#aaa; margin:0 0 10px 0;">Кликни по карте, чтобы поставить пин</p>
@@ -102,6 +172,7 @@
         <button id="form-save">Сохранить точку</button>
         <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
     </div>
+
     <div id="toast"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -118,8 +189,9 @@
         });
         window.pswpLightbox.init();
     </script>
+
     <script>
-        var map = L.map('map', { zoomControl: false }).setView([53.195873, 50.100193], 10);
+        var map = L.map('map', { zoomControl: false }).setView(L.latLng(53.195873, 50.100193), 10);
         L.control.zoom({ position: 'bottomleft' }).addTo(map);
         L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', {
             attribution: '&copy; Stadia Maps',
@@ -131,12 +203,13 @@
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        /* Белая подсветка у иконок точек */
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: `<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.95));" />`,
-            iconSize: [56, 56],
-            iconAnchor: [28, 28],
-            popupAnchor: [0, -28]
+            html: `<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.95));" />`,
+            iconSize: L.point(56, 56),
+            iconAnchor: L.point(28, 28),
+            popupAnchor: L.point(0, -28)
         });
 
         var clusterGroups = {
@@ -157,6 +230,7 @@
         var userLocationMarker = null;
         var userAccuracyCircle = null;
         var tempDraftMarker = null;
+        var isAdmin = false;
 
         function isMobile() {
             return window.innerWidth <= 768;
@@ -174,12 +248,93 @@
             }, 3500);
         }
 
+        /* --- АВТОРИЗАЦИЯ И РОЛИ --- */
+        const authModal = document.getElementById('auth-modal');
+        const roleBadge = document.getElementById('role-badge');
+        const authSwitchBtn = document.getElementById('auth-switch-btn');
+
+        function updateRoleUI() {
+            if (isAdmin) {
+                roleBadge.innerText = 'Роль: Админ (удаление доступно)';
+                roleBadge.className = 'badge-admin';
+                authSwitchBtn.innerText = 'Выйти из Админа';
+            } else {
+                roleBadge.innerText = 'Роль: Обычный пользователь';
+                roleBadge.className = 'badge-user';
+                authSwitchBtn.innerText = 'Войти как Админ';
+            }
+            loadData();
+        }
+
+        /* Проверка активной сессии при загрузке */
+        async function checkAuthSession() {
+            const { data } = await db.auth.getSession();
+            if (data && data.session) {
+                isAdmin = true;
+                authModal.classList.add('hidden');
+                updateRoleUI();
+            } else if (sessionStorage.getItem('ft_guest_mode') === '1') {
+                isAdmin = false;
+                authModal.classList.add('hidden');
+                updateRoleUI();
+            } else {
+                loadData();
+            }
+        }
+
+        document.getElementById('enter-guest-btn').addEventListener('click', function() {
+            isAdmin = false;
+            sessionStorage.setItem('ft_guest_mode', '1');
+            authModal.classList.add('hidden');
+            updateRoleUI();
+            showToast('Вы вошли как обычный пользователь');
+        });
+
+        document.getElementById('login-admin-btn').addEventListener('click', async function() {
+            var email = document.getElementById('login-email').value.trim();
+            var password = document.getElementById('login-password').value;
+            if (!email || !password) {
+                showToast('Введите email и пароль админа', true);
+                return;
+            }
+            var btn = document.getElementById('login-admin-btn');
+            btn.disabled = true;
+            btn.innerText = 'Вход...';
+
+            const { data, error } = await db.auth.signInWithPassword({ email: email, password: password });
+            btn.disabled = false;
+            btn.innerText = '🔑 Войти как Админ';
+
+            if (error) {
+                showToast('Ошибка входа: ' + error.message, true);
+            } else {
+                isAdmin = true;
+                sessionStorage.removeItem('ft_guest_mode');
+                authModal.classList.add('hidden');
+                document.getElementById('login-password').value = '';
+                updateRoleUI();
+                showToast('Вы вошли как Администратор!');
+            }
+        });
+
+        authSwitchBtn.addEventListener('click', async function() {
+            if (isAdmin) {
+                await db.auth.signOut();
+                isAdmin = false;
+                sessionStorage.setItem('ft_guest_mode', '1');
+                updateRoleUI();
+                showToast('Вы вышли из режима Админа');
+            } else {
+                document.getElementById('sidebar').classList.remove('open');
+                authModal.classList.remove('hidden');
+            }
+        });
+
+        /* --- ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) --- */
         const sheet = document.getElementById('bottom-sheet');
         const sheetBody = document.getElementById('sheet-body');
         const dragZone = document.getElementById('sheet-drag-zone');
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
+        let startY = 0, currentY = 0, isDragging = false;
 
         function openBottomSheet(htmlContent) {
             sheetBody.innerHTML = htmlContent;
@@ -203,7 +358,7 @@
 
         dragZone.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length > 0) {
-                startY = e.touches[0].clientY;
+                startY = e.touches.item(0).clientY;
                 isDragging = true;
                 sheet.style.transition = 'none';
             }
@@ -211,7 +366,7 @@
 
         dragZone.addEventListener('touchmove', function(e) {
             if (!isDragging || !e.touches || e.touches.length === 0) return;
-            currentY = e.touches[0].clientY;
+            currentY = e.touches.item(0).clientY;
             const deltaY = currentY - startY;
             const baseOffset = sheet.classList.contains('full') ? 0 : window.innerHeight * 0.42;
             sheet.style.transform = `translateY(${Math.max(0, baseOffset + deltaY)}px)`;
@@ -246,13 +401,23 @@
                     link.setAttribute('data-pswp-width', this.naturalWidth);
                     link.setAttribute('data-pswp-height', this.naturalHeight);
                 };
-                img.onerror = function() {
-                    link.style.display = 'none';
-                };
                 img.src = link.href;
             });
         }
 
+        /* --- ПАРСИНГ ССЫЛОК И BASE64 ФОТО --- */
+        function parseImageUrls(rawStr) {
+            if (!rawStr || rawStr.trim() === '') return [];
+            var str = rawStr.trim();
+            /* Если в строке есть data:image/..., режем аккуратно, чтобы не порвать запятую внутри base64 */
+            if (str.includes('data:image/')) {
+                var parts = str.split(/,\s*(?=https?:\/\/|data:image\/)/);
+                return parts.map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+            }
+            return str.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+        }
+
+        /* --- ЗАГРУЗКА ДАННЫХ --- */
         async function loadData() {
             try {
                 const { data, error } = await db.from('locations').select('*');
@@ -277,29 +442,30 @@
                     }
 
                     var imageHtml = '';
-                    if (loc.image_url && loc.image_url.trim() !== '') {
-                        var urls = loc.image_url.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
-                        if (urls.length > 0) {
-                            imageHtml = '<div class="popup-gallery">';
-                            urls.forEach(function(url) {
-                                imageHtml += `<a href="${url}" data-pswp-width="1200" data-pswp-height="900"><img src="${url}" alt="Фото" loading="lazy"></a>`;
-                            });
-                            imageHtml += '</div>';
-                        }
+                    var urls = parseImageUrls(loc.image_url);
+                    if (urls.length > 0) {
+                        imageHtml = '<div class="popup-gallery">';
+                        urls.forEach(function(url) {
+                            imageHtml += `<a href="${url}" data-pswp-width="1200" data-pswp-height="900"><img src="${url}" alt="Фото" loading="lazy"></a>`;
+                        });
+                        imageHtml += '</div>';
                     }
 
-                    var cardHtml = `<div class="card-content"><b>${loc.name}</b><div class="card-desc">${loc.description || 'Без описания'}</div>${imageHtml}<button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button></div>`;
-                    var marker = L.marker([loc.lat, loc.lng], { icon: customIcon });
+                    /* Кнопка удаления видна ТОЛЬКО если вошёл Админ */
+                    var deleteBtnHtml = isAdmin ? `<button class="delete-btn" onclick="deletePoint(${loc.id})">Удалить точку</button>` : '';
+                    var cardHtml = `<div class="card-content"><b>${loc.name}</b><div class="card-desc">${loc.description || 'Без описания'}</div>${imageHtml}${deleteBtnHtml}</div>`;
+                    var marker = L.marker(L.latLng(loc.lat, loc.lng), { icon: customIcon });
 
                     marker.on('click', function(e) {
                         L.DomEvent.stopPropagation(e);
                         if (isMobile()) {
                             openBottomSheet(cardHtml);
-                            const targetPoint = map.project([loc.lat, loc.lng], map.getZoom());
+                            const targetPoint = map.project(L.latLng(loc.lat, loc.lng), map.getZoom());
                             targetPoint.y += window.innerHeight * 0.18;
                             map.panTo(map.unproject(targetPoint, map.getZoom()), { animate: true });
                         } else {
                             if (!marker.getPopup()) marker.bindPopup(cardHtml);
+                            else marker.setPopupContent(cardHtml);
                             marker.openPopup();
                             setTimeout(updatePhotoSizes, 50);
                         }
@@ -343,14 +509,14 @@
         }
 
         map.on('overlayadd', function(e) {
-            if (e.name === 'Питер') map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
+            if (e.name === 'Питер') map.flyTo(L.latLng(59.934127, 30.305973), 10, { duration: 1.5 });
         });
         map.on('overlayremove', function(e) {
-            if (e.name === 'Питер') map.flyTo([53.195873, 50.100193], 10, { duration: 1.5 });
+            if (e.name === 'Питер') map.flyTo(L.latLng(53.195873, 50.100193), 10, { duration: 1.5 });
         });
 
         L.control.layers(null, layers, { collapsed: true, position: 'topright' }).addTo(map);
-        loadData();
+        checkAuthSession();
 
         document.getElementById('menu-btn').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -361,6 +527,7 @@
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
+        /* --- ГЕОЛОКАЦИЯ (GPS) --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
             if (!navigator.geolocation) {
                 showToast('Браузер не поддерживает геолокацию', true);
@@ -369,7 +536,7 @@
             showToast('Определяем местоположение...');
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
-                    var latlng = [pos.coords.latitude, pos.coords.longitude];
+                    var latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
                     var accuracy = pos.coords.accuracy;
                     map.flyTo(latlng, 16, { duration: 1.2 });
                     if (userLocationMarker) {
@@ -389,6 +556,7 @@
             );
         });
 
+        /* --- СЖАТИЕ И ЗАГРУЗКА ФОТО --- */
         document.getElementById('form-files').addEventListener('change', function(e) {
             var count = e.target.files ? e.target.files.length : 0;
             document.getElementById('file-count').innerText = count > 0 ? `Выбрано файлов: ${count}` : 'Файлы не выбраны';
@@ -401,7 +569,7 @@
                     var img = new Image();
                     img.onload = function() {
                         var canvas = document.createElement('canvas');
-                        var maxDim = 1280;
+                        var maxDim = 900;
                         var w = img.width;
                         var h = img.height;
                         if (w > maxDim || h > maxDim) {
@@ -412,8 +580,8 @@
                         canvas.height = h;
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         canvas.toBlob(function(blob) {
-                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', 0.8) });
-                        }, 'image/jpeg', 0.8);
+                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', 0.72) });
+                        }, 'image/jpeg', 0.72);
                     };
                     img.src = event.target.result;
                 };
@@ -421,6 +589,7 @@
             });
         }
 
+        /* --- ДОБАВЛЕНИЕ ТОЧКИ --- */
         var newLat = 0;
         var newLng = 0;
 
@@ -490,7 +659,7 @@
 
             if (fileInput.files && fileInput.files.length > 0) {
                 for (var i = 0; i < fileInput.files.length; i++) {
-                    var compressed = await compressImage(fileInput.files[i]);
+                    var compressed = await compressImage(fileInput.files.item(i));
                     var fileName = `${Date.now()}_${i}.jpg`;
                     const { error: uploadErr } = await db.storage.from('photos').upload(fileName, compressed.blob, { contentType: 'image/jpeg' });
                     if (!uploadErr) {
@@ -531,6 +700,10 @@
         });
 
         window.deletePoint = async function(id) {
+            if (!isAdmin) {
+                showToast('Удалять точки может только Администратор', true);
+                return;
+            }
             if (confirm('Точно удалить эту точку?')) {
                 const { error } = await db.from('locations').delete().eq('id', id);
                 if (error) {
