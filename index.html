@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fast Travel | Карта маршрутов</title>
+    <title>Fast Travel | Карта маршрутов (v5)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
@@ -12,13 +12,16 @@
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; overflow: hidden; }
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
         
+        /* Кластеры */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 212, 255, 0.6) !important; border: 2px solid #fff !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #1a1a1a !important; color: #00d4ff !important; font-weight: bold; }
         
+        /* Десктопный попап */
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
         .leaflet-popup-tip { background-color: #2a2a2a; }
         .leaflet-popup-content { max-width: 300px; margin: 0; padding: 0; }
         
+        /* Карточка контента */
         .card-content { padding: 15px; font-size: 14px; line-height: 1.5; color: #e0e0e0; }
         .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 6px; padding-right: 25px; }
         .card-desc { margin-bottom: 10px; white-space: pre-line; }
@@ -29,6 +32,7 @@
         .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; transition: 0.2s; }
         .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
+        /* ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) ДЛЯ МОБИЛЬНЫХ */
         #bottom-sheet {
             position: fixed;
             left: 0;
@@ -92,6 +96,7 @@
             #bottom-sheet { display: none !important; }
         }
 
+        /* Кнопки и сайдбар */
         #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
         #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
         #sidebar.open { left: 0; }
@@ -106,29 +111,24 @@
         #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         #locate-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         
-        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); max-height: 80vh; overflow-y: auto; }
+        /* Форма добавления */
+        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
         #add-form.open { display: flex; }
         @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
-        #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
-        #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #add-form button:hover { background-color: #00b0d4; }
-        #add-form button:disabled { background-color: #555; color: #999; cursor: not-allowed; }
+        #add-form input[type="text"], #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
         
         .file-upload-label {
-            display: block;
-            padding: 8px;
-            margin-bottom: 10px;
-            background-color: #1a1a1a;
-            border: 1px dashed #00d4ff;
-            border-radius: 6px;
-            color: #00d4ff;
-            text-align: center;
-            cursor: pointer;
-            font-size: 13px;
+            display: block; padding: 9px; margin-bottom: 8px; border-radius: 6px;
+            border: 1px dashed #00d4ff; background-color: #1a1a1a; color: #00d4ff;
+            text-align: center; cursor: pointer; font-size: 13px; font-weight: bold;
         }
         .file-upload-label:hover { background-color: #222; }
-        #file-count-hint { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
+        #file-count-text { font-size: 11px; color: #aaa; margin-bottom: 10px; text-align: center; }
 
+        #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #add-form button:hover { background-color: #00b0d4; }
+        #add-form button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 4000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
         .leaflet-control-layers label { color: #e0e0e0; }
@@ -146,6 +146,7 @@
 
     <div id="map"></div>
 
+    <!-- Выдвижная мобильная шторка -->
     <div id="bottom-sheet">
         <div id="sheet-drag-zone">
             <div id="sheet-handle"></div>
@@ -163,9 +164,9 @@
         <input type="text" id="form-name" placeholder="Название" required>
         <textarea id="form-desc" placeholder="Описание" rows="2"></textarea>
         
-        <label class="file-upload-label" for="form-files">📷 Выбрать фото с устройства</label>
-        <input type="file" id="form-files" accept="image/*" multiple style="display:none;">
-        <div id="file-count-hint">Файлы не выбраны</div>
+        <label class="file-upload-label" for="form-file">📷 Выбрать фото с устройства</label>
+        <input type="file" id="form-file" accept="image/*" multiple style="display:none;">
+        <div id="file-count-text">Файлы не выбраны</div>
         
         <input type="text" id="form-images" placeholder="Или ссылки на фото (через запятую)">
         
@@ -174,7 +175,6 @@
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
-        
         <button id="form-save">Сохранить точку</button>
         <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
     </div>
@@ -199,22 +199,41 @@
     <script>
         var map = L.map('map', { zoomControl: false }).setView([53.195873, 50.100193], 10);
         L.control.zoom({ position: 'bottomleft' }).addTo(map);
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', {
+        
+        // Основной темный слой Stadia Maps с автоматическим переключением на CartoDB Dark Matter при блокировке/ошибке
+        var stadiaLayer = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=9fc223d0-2456-4c9d-923d-08dc9822ebc1', {
             attribution: '&copy; Stadia Maps',
             maxZoom: 20,
             keepBuffer: 4
-        }).addTo(map);
+        });
+        
+        var cartoDarkFallback = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        });
+
+        var fallbackActivated = false;
+        stadiaLayer.on('tileerror', function() {
+            if (!fallbackActivated) {
+                fallbackActivated = true;
+                map.removeLayer(stadiaLayer);
+                cartoDarkFallback.addTo(map);
+            }
+        });
+        stadiaLayer.addTo(map);
 
         const SUPABASE_URL = 'https://rawcofbihkxhzxnuhksr.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Крупные иконки точек (56x56 px)
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: '<img src="logo.png" onerror="this.onerror=null;this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';this.style.width='28px';" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.95));" />',
-            iconSize: [56, 56],
-            iconAnchor: [28, 28],
-            popupAnchor: [0, -28]
+            html: '<img src="logo.png" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png'; this.style.width='32px';" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.85));" />',
+            iconSize: new L.Point(56, 56),
+            iconAnchor: new L.Point(28, 28),
+            popupAnchor: new L.Point(0, -28)
         });
 
         var clusterGroups = {
@@ -233,6 +252,7 @@
         var allPoints = [];
         var markerStore = {};
         var userLocationMarker = null;
+        var userAccuracyCircle = null;
         var tempDraftMarker = null;
 
         function isMobile() {
@@ -251,6 +271,7 @@
             }, 3500);
         }
 
+        /* --- ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) --- */
         const sheet = document.getElementById('bottom-sheet');
         const sheetBody = document.getElementById('sheet-body');
         const dragZone = document.getElementById('sheet-drag-zone');
@@ -280,8 +301,7 @@
 
         dragZone.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length > 0) {
-                startY = e.touches[0].clientY;
-                currentY = startY;
+                startY = e.touches.item(0).clientY;
                 isDragging = true;
                 sheet.style.transition = 'none';
             }
@@ -289,7 +309,7 @@
 
         dragZone.addEventListener('touchmove', function(e) {
             if (!isDragging || !e.touches || e.touches.length === 0) return;
-            currentY = e.touches[0].clientY;
+            currentY = e.touches.item(0).clientY;
             const deltaY = currentY - startY;
             const baseOffset = sheet.classList.contains('full') ? 0 : window.innerHeight * 0.42;
             const newTranslate = Math.max(0, baseOffset + deltaY);
@@ -331,6 +351,7 @@
             });
         }
 
+        /* --- ЗАГРУЗКА ДАННЫХ --- */
         async function loadData() {
             try {
                 const { data, error } = await db.from('locations').select('*');
@@ -356,8 +377,12 @@
 
                     var imageHtml = '';
                     if (loc.image_url && loc.image_url.trim() !== '') {
-                        var urls = loc.image_url.split('|').length > 1 ? loc.image_url.split('|') : loc.image_url.split(',');
-                        urls = urls.map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+                        var urls = [];
+                        if (loc.image_url.trim().startsWith('data:image')) {
+                            urls = [loc.image_url.trim()];
+                        } else {
+                            urls = loc.image_url.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+                        }
                         if (urls.length > 0) {
                             imageHtml = '<div class="popup-gallery">';
                             urls.forEach(function(url) {
@@ -444,6 +469,7 @@
             });
         }
 
+        /* --- СОБЫТИЯ ИНТЕРФЕЙСА --- */
         map.on('overlayadd', function(e) {
             if (e.name === 'Питер') map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
         });
@@ -463,50 +489,50 @@
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
+        /* --- НАДЕЖНАЯ ГЕОЛОКАЦИЯ --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
             if (!navigator.geolocation) {
                 showToast('Ваш браузер не поддерживает геолокацию', true);
                 return;
             }
-            showToast('Определяю местоположение...');
+            showToast('Определяем местоположение...');
             navigator.geolocation.getCurrentPosition(
                 function(pos) {
                     var lat = pos.coords.latitude;
                     var lng = pos.coords.longitude;
+                    var accuracy = pos.coords.accuracy;
                     var latlng = [lat, lng];
+
                     map.flyTo(latlng, 15, { duration: 1.2 });
+
                     if (userLocationMarker) {
                         userLocationMarker.setLatLng(latlng);
+                        userAccuracyCircle.setLatLng(latlng).setRadius(accuracy);
                     } else {
+                        userAccuracyCircle = L.circle(latlng, {
+                            radius: accuracy, color: '#00d4ff', fillColor: '#00d4ff', fillOpacity: 0.15, weight: 1
+                        }).addTo(map);
                         userLocationMarker = L.circleMarker(latlng, {
-                            radius: 9, fillColor: "#00d4ff", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9
+                            radius: 9, fillColor: '#00d4ff', color: '#ffffff', weight: 3, opacity: 1, fillOpacity: 1
                         }).addTo(map).bindPopup('Вы здесь!');
                     }
                     userLocationMarker.openPopup();
                 },
                 function(err) {
-                    if (err.code === 1) {
-                        showToast('Доступ к геолокации запрещён в настройках браузера', true);
-                    } else if (err.code === 2) {
-                        showToast('Позиция недоступна (проверь GPS / интернет)', true);
-                    } else {
-                        showToast('Время ожидания GPS истекло', true);
-                    }
+                    var msg = 'Не удалось определить позицию.';
+                    if (err.code === 1) msg = 'Доступ к геолокации запрещен в настройках браузера.';
+                    else if (err.code === 2) msg = 'GPS недоступен. Проверьте, включена ли геолокация.';
+                    else if (err.code === 3) msg = 'Время ожидания GPS истекло.';
+                    showToast(msg, true);
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         });
 
-        document.getElementById('form-files').addEventListener('change', function(e) {
+        /* --- СЖАТИЕ И ЗАГРУЗКА ФОТО С УСТРОЙСТВА --- */
+        document.getElementById('form-file').addEventListener('change', function(e) {
             var count = e.target.files.length;
-            var hint = document.getElementById('file-count-hint');
-            if (count > 0) {
-                hint.innerText = 'Выбрано файлов: ' + count;
-                hint.style.color = '#00d4ff';
-            } else {
-                hint.innerText = 'Файлы не выбраны';
-                hint.style.color = '#aaa';
-            }
+            document.getElementById('file-count-text').innerText = count > 0 ? 'Выбрано файлов: ' + count : 'Файлы не выбраны';
         });
 
         function compressImage(file, maxWidth, quality) {
@@ -539,15 +565,14 @@
         async function uploadSelectedFiles(files) {
             var uploadedUrls = [];
             for (var i = 0; i < files.length; i++) {
-                var compressed = await compressImage(files[i], 1000, 0.75);
-                var fileName = 'point_' + Date.now() + '_' + i + '.jpg';
+                var compressed = await compressImage(files.item(i), 1200, 0.75);
+                var fileName = Date.now() + '_' + i + '.jpg';
                 
                 const { data, error } = await db.storage.from('photos').upload(fileName, compressed.blob, {
-                    contentType: 'image/jpeg',
-                    upsert: false
+                    contentType: 'image/jpeg'
                 });
 
-                if (!error && data) {
+                if (!error) {
                     const { data: pubData } = db.storage.from('photos').getPublicUrl(fileName);
                     if (pubData && pubData.publicUrl) {
                         uploadedUrls.push(pubData.publicUrl);
@@ -559,6 +584,7 @@
             return uploadedUrls;
         }
 
+        /* --- ДОБАВЛЕНИЕ ТОЧКИ --- */
         var newLat = 0;
         var newLng = 0;
 
@@ -592,6 +618,8 @@
             }
             newLat = 0;
             newLng = 0;
+            document.getElementById('form-file').value = '';
+            document.getElementById('file-count-text').innerText = 'Файлы не выбраны';
             document.getElementById('coords-hint').innerText = 'Кликни по карте, чтобы поставить пин';
         }
 
@@ -613,8 +641,8 @@
             var saveBtn = document.getElementById('form-save');
             var name = document.getElementById('form-name').value.trim();
             var desc = document.getElementById('form-desc').value.trim();
-            var textUrls = document.getElementById('form-images').value.trim();
-            var files = document.getElementById('form-files').files;
+            var linkImages = document.getElementById('form-images').value.trim();
+            var fileInput = document.getElementById('form-file');
             var layer = document.getElementById('form-layer').value;
 
             if (!name || newLat === 0) {
@@ -626,24 +654,21 @@
             saveBtn.innerText = 'Сохранение...';
 
             try {
-                var allPhotos = [];
-                if (textUrls) {
-                    textUrls.split(',').forEach(function(u) {
-                        if (u.trim()) allPhotos.push(u.trim());
-                    });
-                }
-                if (files && files.length > 0) {
+                var finalUrls = [];
+                if (fileInput.files && fileInput.files.length > 0) {
                     showToast('Загрузка фото...');
-                    var uploaded = await uploadSelectedFiles(files);
-                    allPhotos = allPhotos.concat(uploaded);
+                    var uploaded = await uploadSelectedFiles(fileInput.files);
+                    finalUrls = finalUrls.concat(uploaded);
                 }
-
-                var finalImageUrl = allPhotos.join(' | ');
+                if (linkImages) {
+                    var links = linkImages.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+                    finalUrls = finalUrls.concat(links);
+                }
 
                 const { error } = await db.from('locations').insert([{
                     name: name,
                     description: desc,
-                    image_url: finalImageUrl,
+                    image_url: finalUrls.join(','),
                     lat: newLat,
                     lng: newLng,
                     layer: layer,
@@ -658,20 +683,18 @@
                     document.getElementById('form-name').value = '';
                     document.getElementById('form-desc').value = '';
                     document.getElementById('form-images').value = '';
-                    document.getElementById('form-files').value = '';
-                    document.getElementById('file-count-hint').innerText = 'Файлы не выбраны';
-                    document.getElementById('file-count-hint').style.color = '#aaa';
                     closeAddForm();
                     loadData();
                 }
-            } catch (err) {
-                showToast('Ошибка при сохранении', true);
+            } catch (e) {
+                showToast('Ошибка сохранения: ' + e.message, true);
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = 'Сохранить точку';
             }
         });
 
+        /* --- УДАЛЕНИЕ БЕЗ ПАРОЛЯ --- */
         window.deletePoint = async function(id) {
             if (confirm('Точно удалить эту точку?')) {
                 const { error } = await db.from('locations').delete().eq('id', id);
