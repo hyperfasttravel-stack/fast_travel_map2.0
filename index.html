@@ -5,21 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fast Travel | Карта маршрутов (v3)</title>
     
-    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- MarkerCluster CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
-    <!-- PhotoSwipe CSS -->
     <link rel="stylesheet" href="https://unpkg.com/photoswipe@5.4.3/dist/photoswipe.css">
 
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: Arial, sans-serif; overflow: hidden; }
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
 
-        /* Стили для кластеров (кружочков) */
+        /* Стили для кластеров */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
-            background-color: rgba(0, 212, 255, 0.6) !important; /* Твой фирменный голубой */
+            background-color: rgba(0, 212, 255, 0.6) !important;
             border: 2px solid #fff !important;
         }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
@@ -43,7 +40,7 @@
         .delete-btn { background-color: #ff4d4d; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%; font-size: 13px; }
         .delete-btn:hover { background-color: #cc0000; }
 
-        /* Мобильная адаптация (шторка) */
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
             .leaflet-popup { position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; top: auto !important; margin: 0 !important; transform: translateY(0) !important; }
             .leaflet-popup-content-wrapper { border-radius: 20px 20px 0 0; max-height: 70vh; overflow-y: auto; border-bottom: none; }
@@ -164,23 +161,22 @@
             popupAnchor: [0, -20]
         });
 
-        // Создаем группы (кластеры) для точек
-        var clusterGroup = L.markerClusterGroup({
-            maxClusterRadius: 50, // Радиус объединения
-            spiderfyOnMaxZoom: true,
-            showCoverageOnHover: false,
-            zoomToBoundsOnClick: true
-        });
+        // СОЗДАЕМ ОТДЕЛЬНЫЙ КЛАСТЕР ДЛЯ КАЖДОГО СЛОЯ
+        var clusterGroups = {
+            "Самара": L.markerClusterGroup({ maxClusterRadius: 50 }).addTo(map),
+            "Питер": L.markerClusterGroup({ maxClusterRadius: 50 }),
+            "Другое": L.markerClusterGroup({ maxClusterRadius: 50 })
+        };
+
+        // Слой для маршрутов (без кластеризации)
+        var lineLayer = L.layerGroup().addTo(map);
 
         var layers = { 
-            "Самара": L.layerGroup().addTo(map), 
-            "Питер": L.layerGroup(), 
-            "Другое": L.layerGroup(), 
-            "Маршруты (Линии)": L.layerGroup().addTo(map) 
+            "Самара": clusterGroups["Самара"], 
+            "Питер": clusterGroups["Питер"], 
+            "Другое": clusterGroups["Другое"], 
+            "Маршруты (Линии)": lineLayer 
         };
-        
-        // Добавляем кластерный слой на карту
-        map.addLayer(clusterGroup);
 
         var allPoints = [];
         var markerStore = {}; 
@@ -199,8 +195,9 @@
                 const { data, error } = await db.from('locations').select('*');
                 if (error) throw error;
 
-                clusterGroup.clearLayers();
-                Object.values(layers).forEach(layer => layer.clearLayers());
+                // Очищаем все кластеры и линии
+                Object.values(clusterGroups).forEach(group => group.clearLayers());
+                lineLayer.clearLayers();
                 document.getElementById('location-list').innerHTML = '';
                 allPoints = [];
                 markerStore = {};
@@ -210,7 +207,7 @@
                     if (loc.geometry_type === 'LineString') {
                         try {
                             if (Array.isArray(loc.coordinates) && loc.coordinates.length > 0) {
-                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 4, opacity: 0.85, lineJoin: 'round' }).addTo(layers["Маршруты (Линии)"]);
+                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 4, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
                                 count++;
                             }
                         } catch(e) {}
@@ -241,8 +238,12 @@
                     var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(popupContent);
                     markerStore[loc.id] = marker;
 
-                    // Добавляем маркер в кластер
-                    clusterGroup.addLayer(marker);
+                    // Добавляем маркер в ПРАВИЛЬНЫЙ кластер в зависимости от слоя
+                    if (clusterGroups[loc.layer]) {
+                        clusterGroups[loc.layer].addLayer(marker);
+                    } else {
+                        clusterGroups["Другое"].addLayer(marker);
+                    }
 
                     allPoints.push({ name: loc.name, lat: loc.lat, lng: loc.lng, marker: marker });
                     count++;
@@ -336,7 +337,12 @@
                 } else {
                     map.closePopup();
                     if (markerStore[id]) {
-                        clusterGroup.removeLayer(markerStore[id]);
+                        // Удаляем маркер из того кластера, в котором он находится
+                        Object.values(clusterGroups).forEach(group => {
+                            if (group.hasLayer(markerStore[id])) {
+                                group.removeLayer(markerStore[id]);
+                            }
+                        });
                         delete markerStore[id];
                     }
                     showToast('Точка удалена!');
