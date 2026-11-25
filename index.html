@@ -237,7 +237,7 @@
                     var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(popupContent);
                     markerStore[loc.id] = marker;
 
-                    // ЖЕСТКАЯ ПРОВЕРКА СЛОЯ (на случай ошибок в базе)
+                    // ЖЕСТКАЯ ПРОВЕРКА СЛОЯ
                     var layerName = loc.layer ? loc.layer.trim() : '';
                     if (layerName.toLowerCase().includes('питер') || layerName.toLowerCase().includes('piter')) {
                         clusterGroups["Питер"].addLayer(marker);
@@ -275,19 +275,6 @@
                 listContainer.appendChild(div);
             });
         }
-
-        // Обработчик событий слоев (чтобы карта не прыгала)
-        map.on('baselayerchange', function(e) {
-            if (e.name === 'Питер') {
-                // Если включили Питер — летим туда
-                if (map.hasLayer(clusterGroups["Питер"])) {
-                    map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
-                } else {
-                    // Если выключили Питер — возвращаемся в Самару
-                    map.flyTo([53.195873, 50.100193], 10, { duration: 1.5 });
-                }
-            }
-        });
 
         L.control.layers(null, layers, { collapsed: false, position: 'topright' }).addTo(map);
         loadData();
