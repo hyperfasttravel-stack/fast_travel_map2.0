@@ -29,31 +29,69 @@
         .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; transition: 0.2s; }
         .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
-        /* Выдвижная шторка для мобильных */
         #bottom-sheet {
-            position: fixed; left: 0; right: 0; bottom: 0; height: 85vh;
-            background-color: #242424; border-top: 1px solid #444;
-            border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.85);
-            z-index: 2500; transform: translateY(100%);
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 85vh;
+            background-color: #242424;
+            border-top: 1px solid #444;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.85);
+            z-index: 2500;
+            transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
         }
         #bottom-sheet.half { transform: translateY(42vh); }
         #bottom-sheet.full { transform: translateY(0); }
+        
         #sheet-drag-zone {
-            padding: 12px 0 8px 0; touch-action: none; display: flex;
-            justify-content: center; align-items: center; position: relative; flex-shrink: 0;
+            padding: 12px 0 8px 0;
+            cursor: grab;
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            flex-shrink: 0;
         }
-        #sheet-handle { width: 42px; height: 5px; background-color: #666; border-radius: 3px; }
+        #sheet-handle {
+            width: 42px;
+            height: 5px;
+            background-color: #666;
+            border-radius: 3px;
+        }
         #sheet-close-btn {
-            position: absolute; right: 15px; top: 8px; background: #333; border: none;
-            color: #aaa; width: 28px; height: 28px; border-radius: 50%; font-size: 18px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            position: absolute;
+            right: 15px;
+            top: 8px;
+            background: #333;
+            border: none;
+            color: #aaa;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #sheet-body { overflow-y: auto; padding: 0 18px 40px 18px; flex-grow: 1; overscroll-behavior: contain; }
-        @media (min-width: 769px) { #bottom-sheet { display: none !important; } }
+        #sheet-body {
+            overflow-y: auto;
+            padding: 0 18px 40px 18px;
+            flex-grow: 1;
+            overscroll-behavior: contain;
+        }
+        @media (min-width: 769px) {
+            #bottom-sheet { display: none !important; }
+        }
 
-        /* Кнопки и сайдбар */
         #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
         #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
         #sidebar.open { left: 0; }
@@ -68,16 +106,29 @@
         #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         #locate-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         
-        /* Форма добавления */
-        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); max-height: 75vh; overflow-y: auto; }
+        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); max-height: 80vh; overflow-y: auto; }
         #add-form.open { display: flex; }
         @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
-        #add-form input[type="text"], #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
-        .file-upload-label { background-color: #1a1a1a; border: 1px dashed #00d4ff; color: #00d4ff; padding: 10px; border-radius: 6px; text-align: center; cursor: pointer; margin-bottom: 10px; font-size: 13px; }
-        #file-count-text { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
+        #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
         #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #add-form button:hover { background-color: #00b0d4; }
         #add-form button:disabled { background-color: #555; color: #999; cursor: not-allowed; }
         
+        .file-upload-label {
+            display: block;
+            padding: 8px;
+            margin-bottom: 10px;
+            background-color: #1a1a1a;
+            border: 1px dashed #00d4ff;
+            border-radius: 6px;
+            color: #00d4ff;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .file-upload-label:hover { background-color: #222; }
+        #file-count-hint { font-size: 11px; color: #aaa; margin-top: -6px; margin-bottom: 10px; text-align: center; }
+
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 4000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
         .leaflet-control-layers label { color: #e0e0e0; }
@@ -114,14 +165,16 @@
         
         <label class="file-upload-label" for="form-files">📷 Выбрать фото с устройства</label>
         <input type="file" id="form-files" accept="image/*" multiple style="display:none;">
-        <div id="file-count-text">Файлы не выбраны</div>
+        <div id="file-count-hint">Файлы не выбраны</div>
         
         <input type="text" id="form-images" placeholder="Или ссылки на фото (через запятую)">
+        
         <select id="form-layer">
             <option value="Самара">Самара</option>
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
+        
         <button id="form-save">Сохранить точку</button>
         <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
     </div>
@@ -158,7 +211,7 @@
 
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: '<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.95));" />',
+            html: '<img src="logo.png" onerror="this.onerror=null;this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';this.style.width='28px';" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(0, 212, 255, 0.95));" />',
             iconSize: [56, 56],
             iconAnchor: [28, 28],
             popupAnchor: [0, -28]
@@ -180,7 +233,6 @@
         var allPoints = [];
         var markerStore = {};
         var userLocationMarker = null;
-        var userAccuracyCircle = null;
         var tempDraftMarker = null;
 
         function isMobile() {
@@ -199,7 +251,6 @@
             }, 3500);
         }
 
-        /* --- ВЫДВИЖНАЯ ШТОРКА --- */
         const sheet = document.getElementById('bottom-sheet');
         const sheetBody = document.getElementById('sheet-body');
         const dragZone = document.getElementById('sheet-drag-zone');
@@ -230,6 +281,7 @@
         dragZone.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length > 0) {
                 startY = e.touches[0].clientY;
+                currentY = startY;
                 isDragging = true;
                 sheet.style.transition = 'none';
             }
@@ -279,7 +331,6 @@
             });
         }
 
-        /* --- ЗАГРУЗКА ДАННЫХ --- */
         async function loadData() {
             try {
                 const { data, error } = await db.from('locations').select('*');
@@ -305,7 +356,8 @@
 
                     var imageHtml = '';
                     if (loc.image_url && loc.image_url.trim() !== '') {
-                        var urls = loc.image_url.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+                        var urls = loc.image_url.split('|').length > 1 ? loc.image_url.split('|') : loc.image_url.split(',');
+                        urls = urls.map(function(s) { return s.trim(); }).filter(function(s) { return s; });
                         if (urls.length > 0) {
                             imageHtml = '<div class="popup-gallery">';
                             urls.forEach(function(url) {
@@ -392,7 +444,6 @@
             });
         }
 
-        /* --- СОБЫТИЯ ИНТЕРФЕЙСА --- */
         map.on('overlayadd', function(e) {
             if (e.name === 'Питер') map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
         });
@@ -412,31 +463,23 @@
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
-        /* --- ИСПРАВЛЕННАЯ ГЕОЛОКАЦИЯ --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
             if (!navigator.geolocation) {
-                showToast('Геолокация не поддерживается браузером', true);
+                showToast('Ваш браузер не поддерживает геолокацию', true);
                 return;
             }
-            showToast('Определяем местоположение...');
+            showToast('Определяю местоположение...');
             navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
-                    var acc = position.coords.accuracy;
+                function(pos) {
+                    var lat = pos.coords.latitude;
+                    var lng = pos.coords.longitude;
                     var latlng = [lat, lng];
-
                     map.flyTo(latlng, 15, { duration: 1.2 });
-
                     if (userLocationMarker) {
                         userLocationMarker.setLatLng(latlng);
-                        userAccuracyCircle.setLatLng(latlng).setRadius(acc);
                     } else {
-                        userAccuracyCircle = L.circle(latlng, {
-                            radius: acc, color: '#00d4ff', fillColor: '#00d4ff', fillOpacity: 0.15, weight: 1
-                        }).addTo(map);
                         userLocationMarker = L.circleMarker(latlng, {
-                            radius: 9, fillColor: '#00d4ff', color: '#ffffff', weight: 3, opacity: 1, fillOpacity: 1
+                            radius: 9, fillColor: "#00d4ff", color: "#fff", weight: 3, opacity: 1, fillOpacity: 0.9
                         }).addTo(map).bindPopup('Вы здесь!');
                     }
                     userLocationMarker.openPopup();
@@ -445,47 +488,47 @@
                     if (err.code === 1) {
                         showToast('Доступ к геолокации запрещён в настройках браузера', true);
                     } else if (err.code === 2) {
-                        showToast('Не удалось определить координаты (включите GPS)', true);
+                        showToast('Позиция недоступна (проверь GPS / интернет)', true);
                     } else {
-                        showToast('Время ожидания геолокации истекло', true);
+                        showToast('Время ожидания GPS истекло', true);
                     }
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         });
 
-        /* --- СЖАТИЕ И ЗАГРУЗКА ФОТО С УСТРОЙСТВА --- */
         document.getElementById('form-files').addEventListener('change', function(e) {
-            var files = e.target.files;
-            document.getElementById('file-count-text').innerText = files.length > 0 ? 'Выбрано файлов: ' + files.length : 'Файлы не выбраны';
+            var count = e.target.files.length;
+            var hint = document.getElementById('file-count-hint');
+            if (count > 0) {
+                hint.innerText = 'Выбрано файлов: ' + count;
+                hint.style.color = '#00d4ff';
+            } else {
+                hint.innerText = 'Файлы не выбраны';
+                hint.style.color = '#aaa';
+            }
         });
 
-        function compressImage(file) {
+        function compressImage(file, maxWidth, quality) {
             return new Promise(function(resolve) {
                 var reader = new FileReader();
                 reader.onload = function(event) {
                     var img = new Image();
                     img.onload = function() {
                         var canvas = document.createElement('canvas');
-                        var maxSide = 1280;
                         var width = img.width;
                         var height = img.height;
-                        if (width > maxSide || height > maxSide) {
-                            if (width > height) {
-                                height = Math.round(height * maxSide / width);
-                                width = maxSide;
-                            } else {
-                                width = Math.round(width * maxSide / height);
-                                height = maxSide;
-                            }
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
                         }
                         canvas.width = width;
                         canvas.height = height;
                         var ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         canvas.toBlob(function(blob) {
-                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', 0.78) });
-                        }, 'image/jpeg', 0.8);
+                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', quality) });
+                        }, 'image/jpeg', quality);
                     };
                     img.src = event.target.result;
                 };
@@ -496,17 +539,19 @@
         async function uploadSelectedFiles(files) {
             var uploadedUrls = [];
             for (var i = 0; i < files.length; i++) {
-                var compressed = await compressImage(files[i]);
+                var compressed = await compressImage(files[i], 1000, 0.75);
                 var fileName = 'point_' + Date.now() + '_' + i + '.jpg';
                 
-                var res = await db.storage.from('photos').upload(fileName, compressed.blob, {
+                const { data, error } = await db.storage.from('photos').upload(fileName, compressed.blob, {
                     contentType: 'image/jpeg',
                     upsert: false
                 });
 
-                if (!res.error) {
-                    var pub = db.storage.from('photos').getPublicUrl(fileName);
-                    uploadedUrls.push(pub.data.publicUrl);
+                if (!error && data) {
+                    const { data: pubData } = db.storage.from('photos').getPublicUrl(fileName);
+                    if (pubData && pubData.publicUrl) {
+                        uploadedUrls.push(pubData.publicUrl);
+                    }
                 } else {
                     uploadedUrls.push(compressed.dataUrl);
                 }
@@ -514,7 +559,6 @@
             return uploadedUrls;
         }
 
-        /* --- ДОБАВЛЕНИЕ ТОЧКИ --- */
         var newLat = 0;
         var newLng = 0;
 
@@ -569,8 +613,8 @@
             var saveBtn = document.getElementById('form-save');
             var name = document.getElementById('form-name').value.trim();
             var desc = document.getElementById('form-desc').value.trim();
-            var manualLinks = document.getElementById('form-images').value.trim();
-            var fileInput = document.getElementById('form-files');
+            var textUrls = document.getElementById('form-images').value.trim();
+            var files = document.getElementById('form-files').files;
             var layer = document.getElementById('form-layer').value;
 
             if (!name || newLat === 0) {
@@ -582,20 +626,24 @@
             saveBtn.innerText = 'Сохранение...';
 
             try {
-                var allImages = [];
-                if (fileInput.files.length > 0) {
-                    showToast('Загружаем фото...');
-                    var uploaded = await uploadSelectedFiles(fileInput.files);
-                    allImages = allImages.concat(uploaded);
+                var allPhotos = [];
+                if (textUrls) {
+                    textUrls.split(',').forEach(function(u) {
+                        if (u.trim()) allPhotos.push(u.trim());
+                    });
                 }
-                if (manualLinks) {
-                    allImages = allImages.concat(manualLinks.split(',').map(function(s) { return s.trim(); }).filter(Boolean));
+                if (files && files.length > 0) {
+                    showToast('Загрузка фото...');
+                    var uploaded = await uploadSelectedFiles(files);
+                    allPhotos = allPhotos.concat(uploaded);
                 }
+
+                var finalImageUrl = allPhotos.join(' | ');
 
                 const { error } = await db.from('locations').insert([{
                     name: name,
                     description: desc,
-                    image_url: allImages.join(','),
+                    image_url: finalImageUrl,
                     lat: newLat,
                     lng: newLng,
                     layer: layer,
@@ -610,13 +658,14 @@
                     document.getElementById('form-name').value = '';
                     document.getElementById('form-desc').value = '';
                     document.getElementById('form-images').value = '';
-                    fileInput.value = '';
-                    document.getElementById('file-count-text').innerText = 'Файлы не выбраны';
+                    document.getElementById('form-files').value = '';
+                    document.getElementById('file-count-hint').innerText = 'Файлы не выбраны';
+                    document.getElementById('file-count-hint').style.color = '#aaa';
                     closeAddForm();
                     loadData();
                 }
-            } catch (e) {
-                showToast('Ошибка при сохранении фото', true);
+            } catch (err) {
+                showToast('Ошибка при сохранении', true);
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = 'Сохранить точку';
