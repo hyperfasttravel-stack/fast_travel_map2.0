@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fast Travel | Карта маршрутов (v4)</title>
+    <title>Fast Travel | Карта маршрутов (v5)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
@@ -12,13 +12,16 @@
         body, html { margin: 0; padding: 0; height: 100%; background-color: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; overflow: hidden; }
         #map { width: 100%; height: 100vh; background-color: #1a1a1a; filter: brightness(1.3) contrast(1.2) saturate(1.1); }
         
+        /* Кластеры */
         .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(0, 212, 255, 0.6) !important; border: 2px solid #fff !important; }
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #1a1a1a !important; color: #00d4ff !important; font-weight: bold; }
         
+        /* Десктопный попап */
         .leaflet-popup-content-wrapper { background-color: #2a2a2a; color: #e0e0e0; border-radius: 12px; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); padding: 0; }
         .leaflet-popup-tip { background-color: #2a2a2a; }
         .leaflet-popup-content { max-width: 300px; margin: 0; padding: 0; }
         
+        /* Карточка контента */
         .card-content { padding: 15px; font-size: 14px; line-height: 1.5; color: #e0e0e0; }
         .card-content b { color: #00d4ff; font-size: 17px; display: block; margin-bottom: 6px; padding-right: 25px; }
         .card-desc { margin-bottom: 10px; white-space: pre-line; }
@@ -29,69 +32,32 @@
         .delete-btn { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 14px; width: 100%; font-size: 13px; transition: 0.2s; }
         .delete-btn:hover { background-color: #ff4d4d; color: white; }
 
+        /* ВЫДВИЖНАЯ ШТОРКА (BOTTOM SHEET) ДЛЯ МОБИЛЬНЫХ */
         #bottom-sheet {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 85vh;
-            background-color: #242424;
-            border-top: 1px solid #444;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.85);
-            z-index: 2500;
-            transform: translateY(100%);
+            position: fixed; left: 0; right: 0; bottom: 0; height: 85vh;
+            background-color: #242424; border-top: 1px solid #444;
+            border-radius: 20px 20px 0 0; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.85);
+            z-index: 2500; transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex;
-            flex-direction: column;
-            will-change: transform;
+            display: flex; flex-direction: column; will-change: transform;
         }
         #bottom-sheet.half { transform: translateY(42vh); }
         #bottom-sheet.full { transform: translateY(0); }
         
         #sheet-drag-zone {
-            padding: 12px 0 8px 0;
-            cursor: grab;
-            touch-action: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            flex-shrink: 0;
+            padding: 12px 0 8px 0; cursor: grab; touch-action: none;
+            display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0;
         }
-        #sheet-handle {
-            width: 42px;
-            height: 5px;
-            background-color: #666;
-            border-radius: 3px;
-        }
+        #sheet-handle { width: 42px; height: 5px; background-color: #666; border-radius: 3px; }
         #sheet-close-btn {
-            position: absolute;
-            right: 15px;
-            top: 8px;
-            background: #333;
-            border: none;
-            color: #aaa;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 18px;
-            line-height: 1;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; right: 15px; top: 8px; background: #333; border: none;
+            color: #aaa; width: 28px; height: 28px; border-radius: 50%; font-size: 18px;
+            line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        #sheet-body {
-            overflow-y: auto;
-            padding: 0 18px 40px 18px;
-            flex-grow: 1;
-            overscroll-behavior: contain;
-        }
-        @media (min-width: 769px) {
-            #bottom-sheet { display: none !important; }
-        }
+        #sheet-body { overflow-y: auto; padding: 0 18px 40px 18px; flex-grow: 1; overscroll-behavior: contain; }
+        @media (min-width: 769px) { #bottom-sheet { display: none !important; } }
 
+        /* Кнопки и сайдбар */
         #menu-btn { position: fixed; top: 15px; left: 15px; z-index: 3000; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 8px; padding: 8px 12px; font-size: 20px; cursor: pointer; }
         #sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #2a2a2a; color: white; overflow-y: auto; box-shadow: 2px 0 10px rgba(0,0,0,0.8); z-index: 2900; padding: 60px 20px 20px 20px; box-sizing: border-box; transition: left 0.3s ease-in-out; }
         #sidebar.open { left: 0; }
@@ -103,15 +69,29 @@
         .location-item strong { display: block; font-size: 14px; color: #e0e0e0; }
         .location-item span { font-size: 11px; color: #00d4ff; }
 
+        /* Плавающие кнопки справа внизу */
         #add-point-btn { position: fixed; bottom: 30px; right: 20px; z-index: 2001; background-color: #00d4ff; color: #1a1a1a; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         #locate-btn { position: fixed; bottom: 100px; right: 20px; z-index: 2001; background-color: #2a2a2a; color: #00d4ff; border: 2px solid #00d4ff; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         
-        #add-form { position: fixed; bottom: 100px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+        /* Форма добавления */
+        #add-form { position: fixed; bottom: 95px; right: 20px; z-index: 2600; background-color: #2a2a2a; padding: 15px; border-radius: 12px; border: 1px solid #00d4ff; display: none; flex-direction: column; width: 270px; box-shadow: 0 4px 15px rgba(0,0,0,0.8); max-height: 75vh; overflow-y: auto; }
         #add-form.open { display: flex; }
         @media (max-width: 768px) { #add-form { right: 10px; left: 10px; width: auto; bottom: 95px; } }
-        #add-form input, #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; }
+        #add-form input[type="text"], #add-form select, #add-form textarea { margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #444; background-color: #1a1a1a; color: white; font-family: inherit; width: 100%; box-sizing: border-box; }
+        
+        /* Кнопка выбора файлов с устройства */
+        .file-upload-label {
+            display: block; text-align: center; background-color: #1a1a1a; color: #00d4ff;
+            border: 1px dashed #00d4ff; padding: 8px; border-radius: 6px; cursor: pointer;
+            font-size: 13px; margin-bottom: 10px; transition: 0.2s;
+        }
+        .file-upload-label:hover { background-color: rgba(0, 212, 255, 0.1); }
+        #form-files { display: none; }
+        #file-list-preview { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+
         #add-form button { background-color: #00d4ff; color: #1a1a1a; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         #add-form button:hover { background-color: #00b0d4; }
+        #add-form button:disabled { background-color: #555; color: #888; cursor: not-allowed; }
         
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: #2a2a2a; color: #00d4ff; padding: 10px 20px; border-radius: 8px; border: 1px solid #00d4ff; z-index: 4000; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-weight: bold; text-align: center; font-size: 14px; max-width: 85%; }
         .leaflet-control-layers { background-color: #2a2a2a !important; color: white !important; border-radius: 8px; border: 1px solid #444 !important; }
@@ -130,6 +110,7 @@
 
     <div id="map"></div>
 
+    <!-- Выдвижная мобильная шторка -->
     <div id="bottom-sheet">
         <div id="sheet-drag-zone">
             <div id="sheet-handle"></div>
@@ -146,13 +127,17 @@
         <p id="coords-hint" style="font-size:12px; color:#aaa; margin:0 0 10px 0;">Кликни по карте, чтобы поставить пин</p>
         <input type="text" id="form-name" placeholder="Название" required>
         <textarea id="form-desc" placeholder="Описание" rows="2"></textarea>
-        <input type="text" id="form-images" placeholder="Ссылки на фото (через запятую)">
+        
+        <label for="form-files" class="file-upload-label">📷 Выбрать фото с устройства</label>
+        <input type="file" id="form-files" accept="image/*" multiple>
+        <div id="file-list-preview"></div>
+        
+        <input type="text" id="form-images" placeholder="Или ссылки на фото (через запятую)">
         <select id="form-layer">
             <option value="Самара">Самара</option>
             <option value="Питер">Питер</option>
             <option value="Другое">Другое</option>
         </select>
-        <input type="password" id="form-password" placeholder="Пароль команды" required>
         <button id="form-save">Сохранить точку</button>
         <button id="form-cancel" style="background-color:#444; color:white; margin-top:5px;">Отмена</button>
     </div>
@@ -186,14 +171,14 @@
         const SUPABASE_URL = 'https://rawcofbihkxhzxnuhksr.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_-IcL5KI7zFxj4IOQom6nDQ_q9UVr77T';
         const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const TEAM_PASSWORD = "fasttravel2026";
 
+        /* Крупные иконки точек (56x56 px) */
         var customIcon = L.divIcon({
             className: 'custom-marker',
-            html: '<img src="logo.png" style="width: 40px; height: auto; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.9));" />',
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-            popupAnchor: [0, -20]
+            html: '<img src="logo.png" style="width: 56px; height: auto; filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.95));" />',
+            iconSize: new L.Point(56, 56),
+            iconAnchor: new L.Point(28, 28),
+            popupAnchor: new L.Point(0, -28)
         });
 
         var clusterGroups = {
@@ -212,6 +197,7 @@
         var allPoints = [];
         var markerStore = {};
         var userLocationMarker = null;
+        var userAccuracyCircle = null;
         var tempDraftMarker = null;
 
         function isMobile() {
@@ -227,9 +213,10 @@
             clearTimeout(toast.timer);
             toast.timer = setTimeout(function() {
                 toast.style.display = 'none';
-            }, 3000);
+            }, 3500);
         }
 
+        /* --- ЛОГИКА ВЫДВИЖНОЙ ШТОРКИ (BOTTOM SHEET) --- */
         const sheet = document.getElementById('bottom-sheet');
         const sheetBody = document.getElementById('sheet-body');
         const dragZone = document.getElementById('sheet-drag-zone');
@@ -259,7 +246,7 @@
 
         dragZone.addEventListener('touchstart', function(e) {
             if (e.touches && e.touches.length > 0) {
-                startY = e.touches[0].clientY;
+                startY = e.touches.item(0).clientY;
                 isDragging = true;
                 sheet.style.transition = 'none';
             }
@@ -267,7 +254,7 @@
 
         dragZone.addEventListener('touchmove', function(e) {
             if (!isDragging || !e.touches || e.touches.length === 0) return;
-            currentY = e.touches[0].clientY;
+            currentY = e.touches.item(0).clientY;
             const deltaY = currentY - startY;
             const baseOffset = sheet.classList.contains('full') ? 0 : window.innerHeight * 0.42;
             const newTranslate = Math.max(0, baseOffset + deltaY);
@@ -309,6 +296,7 @@
             });
         }
 
+        /* --- ЗАГРУЗКА ДАННЫХ --- */
         async function loadData() {
             try {
                 const { data, error } = await db.from('locations').select('*');
@@ -325,7 +313,8 @@
                     if (loc.geometry_type === 'LineString') {
                         try {
                             if (Array.isArray(loc.coordinates) && loc.coordinates.length > 0) {
-                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 4, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
+                                /* Линии маршрута стали тоньше (weight: 2.5) */
+                                L.polyline(loc.coordinates, { color: '#ffffff', weight: 2.5, opacity: 0.85, lineJoin: 'round' }).addTo(lineLayer);
                                 count++;
                             }
                         } catch(e) {}
@@ -338,7 +327,7 @@
                         if (urls.length > 0) {
                             imageHtml = '<div class="popup-gallery">';
                             urls.forEach(function(url) {
-                                imageHtml += '<a href="' + url + '" data-pswp-width="1200" data-pswp-height="900"><img src="' + url + '" alt="Фото" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></a>';
+                                imageHtml += '<a href="' + url + '" data-pswp-width="1200" data-pswp-height="900"><img src="' + url + '" alt="Фото" loading="lazy" onerror="this.parentElement.style.display='none'"></a>';
                             });
                             imageHtml += '</div>';
                         }
@@ -421,6 +410,7 @@
             });
         }
 
+        /* --- СОБЫТИЯ ИНТЕРФЕЙСА --- */
         map.on('overlayadd', function(e) {
             if (e.name === 'Питер') map.flyTo([59.934127, 30.305973], 10, { duration: 1.5 });
         });
@@ -440,21 +430,110 @@
             renderList(allPoints.filter(function(p) { return p.name.toLowerCase().includes(text); }));
         });
 
+        /* --- УЛУЧШЕННАЯ ГЕОЛОКАЦИЯ --- */
         document.getElementById('locate-btn').addEventListener('click', function() {
-            map.locate({ setView: true, maxZoom: 15 });
-        });
-        map.on('locationfound', function(e) {
-            if (userLocationMarker) {
-                userLocationMarker.setLatLng(e.latlng);
-            } else {
-                userLocationMarker = L.circleMarker(e.latlng, {
-                    radius: 8, fillColor: "#00d4ff", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.9
-                }).addTo(map).bindPopup('Вы здесь!');
+            if (!navigator.geolocation) {
+                showToast('Ваш браузер не поддерживает геолокацию', true);
+                return;
             }
-            userLocationMarker.openPopup();
-        });
-        map.on('locationerror', function() { showToast('Не удалось определить геолокацию', true); });
+            showToast('Определяю координаты...');
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    var latlng = [pos.coords.latitude, pos.coords.longitude];
+                    var accuracy = pos.coords.accuracy;
+                    map.flyTo(latlng, 16, { duration: 1.2 });
 
+                    if (userLocationMarker) {
+                        userLocationMarker.setLatLng(latlng);
+                        userAccuracyCircle.setLatLng(latlng).setRadius(accuracy);
+                    } else {
+                        userAccuracyCircle = L.circle(latlng, {
+                            radius: accuracy, color: '#00d4ff', fillColor: '#00d4ff', fillOpacity: 0.15, weight: 1
+                        }).addTo(map);
+                        userLocationMarker = L.circleMarker(latlng, {
+                            radius: 9, fillColor: '#00d4ff', color: '#fff', weight: 2.5, opacity: 1, fillOpacity: 1
+                        }).addTo(map).bindPopup('Вы здесь!');
+                    }
+                    userLocationMarker.openPopup();
+                },
+                function(err) {
+                    if (err.code === 1) {
+                        showToast('Доступ к геолокации запрещён в настройках браузера!', true);
+                    } else if (err.code === 2) {
+                        showToast('Сигнал GPS/сети недоступен', true);
+                    } else {
+                        showToast('Таймаут определения геопозиции. Попробуйте ещё раз', true);
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            );
+        });
+
+        /* --- ПРЕВЬЮ ВЫБРАННЫХ ФАЙЛОВ --- */
+        document.getElementById('form-files').addEventListener('change', function(e) {
+            var files = e.target.files;
+            var preview = document.getElementById('file-list-preview');
+            if (files && files.length > 0) {
+                preview.innerText = 'Выбрано файлов: ' + files.length;
+            } else {
+                preview.innerText = '';
+            }
+        });
+
+        /* --- СЖАТИЕ И ЗАГРУЗКА ФОТО В SUPABASE STORAGE (ИЛИ BASE64 FALLBACK) --- */
+        function compressImageToFile(file, maxWidth = 1280, quality = 0.8) {
+            return new Promise(function(resolve) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var width = img.width;
+                        var height = img.height;
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(function(blob) {
+                            resolve({ blob: blob, dataUrl: canvas.toDataURL('image/jpeg', quality) });
+                        }, 'image/jpeg', quality);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadSelectedFiles(fileList) {
+            var uploadedUrls = [];
+            for (var i = 0; i < fileList.length; i++) {
+                var file = fileList.item(i);
+                var compressed = await compressImageToFile(file);
+                var fileName = 'point_' + Date.now() + '_' + i + '.jpg';
+
+                /* Пробуем загрузить в публичный бакет "photos" в Supabase Storage */
+                const { data, error } = await db.storage
+                    .from('photos')
+                    .upload(fileName, compressed.blob, { contentType: 'image/jpeg', upsert: false });
+
+                if (!error && data) {
+                    const { data: pubData } = db.storage.from('photos').getPublicUrl(fileName);
+                    if (pubData && pubData.publicUrl) {
+                        uploadedUrls.push(pubData.publicUrl);
+                        continue;
+                    }
+                }
+                /* Если бакет "photos" не создан или закрыт политиками RLS — сохраняем сжатое фото напрямую */
+                uploadedUrls.push(compressed.dataUrl);
+            }
+            return uploadedUrls;
+        }
+
+        /* --- ДОБАВЛЕНИЕ ТОЧКИ --- */
         var newLat = 0;
         var newLng = 0;
 
@@ -506,51 +585,67 @@
         document.getElementById('form-cancel').addEventListener('click', closeAddForm);
 
         document.getElementById('form-save').addEventListener('click', async function() {
+            var saveBtn = document.getElementById('form-save');
             var name = document.getElementById('form-name').value.trim();
             var desc = document.getElementById('form-desc').value.trim();
-            var images = document.getElementById('form-images').value.trim();
+            var linkImages = document.getElementById('form-images').value.trim();
+            var fileInput = document.getElementById('form-files');
             var layer = document.getElementById('form-layer').value;
-            var password = document.getElementById('form-password').value;
 
             if (!name || newLat === 0) {
                 showToast('Введи название и выбери место на карте!', true);
                 return;
             }
-            if (password !== TEAM_PASSWORD) {
-                showToast('Неверный пароль! Вы не из команды.', true);
-                return;
-            }
 
-            const { error } = await db.from('locations').insert([{
-                name: name,
-                description: desc,
-                image_url: images,
-                lat: newLat,
-                lng: newLng,
-                layer: layer,
-                geometry_type: 'Point',
-                coordinates: '[]'
-            }]);
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Сохранение...';
 
-            if (error) {
-                showToast('Ошибка: ' + error.message, true);
-            } else {
-                showToast('Точка добавлена!');
-                document.getElementById('form-name').value = '';
-                document.getElementById('form-desc').value = '';
-                document.getElementById('form-images').value = '';
-                document.getElementById('form-password').value = '';
-                closeAddForm();
-                loadData();
+            try {
+                var allImageUrls = [];
+                if (linkImages) {
+                    linkImages.split(',').forEach(function(u) {
+                        if (u.trim()) allImageUrls.push(u.trim());
+                    });
+                }
+
+                if (fileInput.files && fileInput.files.length > 0) {
+                    showToast('Загружаю фото...');
+                    var uploaded = await uploadSelectedFiles(fileInput.files);
+                    allImageUrls = allImageUrls.concat(uploaded);
+                }
+
+                const { error } = await db.from('locations').insert([{
+                    name: name,
+                    description: desc,
+                    image_url: allImageUrls.join(','),
+                    lat: newLat,
+                    lng: newLng,
+                    layer: layer,
+                    geometry_type: 'Point',
+                    coordinates: '[]'
+                }]);
+
+                if (error) {
+                    showToast('Ошибка: ' + error.message, true);
+                } else {
+                    showToast('Точка добавлена!');
+                    document.getElementById('form-name').value = '';
+                    document.getElementById('form-desc').value = '';
+                    document.getElementById('form-images').value = '';
+                    fileInput.value = '';
+                    document.getElementById('file-list-preview').innerText = '';
+                    closeAddForm();
+                    loadData();
+                }
+            } catch (e) {
+                showToast('Ошибка при сохранении фото', true);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'Сохранить точку';
             }
         });
 
         window.deletePoint = async function(id) {
-            var password = prompt('Введи пароль команды для удаления точки:');
-            if (password !== TEAM_PASSWORD) {
-                showToast('Неверный пароль!', true);
-                return;
-            }
             if (confirm('Точно удалить эту точку?')) {
                 const { error } = await db.from('locations').delete().eq('id', id);
                 if (error) {
