@@ -161,14 +161,14 @@
             popupAnchor: [0, -20]
         });
 
-        // СОЗДАЕМ ОТДЕЛЬНЫЙ КЛАСТЕР ДЛЯ КАЖДОГО СЛОЯ
+        // Создаем кластеры
         var clusterGroups = {
             "Самара": L.markerClusterGroup({ maxClusterRadius: 50 }).addTo(map),
             "Питер": L.markerClusterGroup({ maxClusterRadius: 50 }),
             "Другое": L.markerClusterGroup({ maxClusterRadius: 50 })
         };
 
-        // Слой для маршрутов (без кластеризации)
+        // Слой для маршрутов
         var lineLayer = L.layerGroup().addTo(map);
 
         var layers = { 
@@ -195,7 +195,6 @@
                 const { data, error } = await db.from('locations').select('*');
                 if (error) throw error;
 
-                // Очищаем все кластеры и линии
                 Object.values(clusterGroups).forEach(group => group.clearLayers());
                 lineLayer.clearLayers();
                 document.getElementById('location-list').innerHTML = '';
@@ -238,9 +237,12 @@
                     var marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).bindPopup(popupContent);
                     markerStore[loc.id] = marker;
 
-                    // Добавляем маркер в ПРАВИЛЬНЫЙ кластер в зависимости от слоя
-                    if (clusterGroups[loc.layer]) {
-                        clusterGroups[loc.layer].addLayer(marker);
+                    // ЖЕСТКАЯ ПРОВЕРКА СЛОЯ (на случай ошибок в базе)
+                    var layerName = loc.layer ? loc.layer.trim() : '';
+                    if (layerName.toLowerCase().includes('питер') || layerName.toLowerCase().includes('piter')) {
+                        clusterGroups["Питер"].addLayer(marker);
+                    } else if (layerName.toLowerCase().includes('самара') || layerName.toLowerCase().includes('samara')) {
+                        clusterGroups["Самара"].addLayer(marker);
                     } else {
                         clusterGroups["Другое"].addLayer(marker);
                     }
@@ -337,7 +339,7 @@
                 } else {
                     map.closePopup();
                     if (markerStore[id]) {
-                        // Удаляем маркер из того кластера, в котором он находится
+                        // Удаляем маркер из всех возможных кластеров
                         Object.values(clusterGroups).forEach(group => {
                             if (group.hasLayer(markerStore[id])) {
                                 group.removeLayer(markerStore[id]);
